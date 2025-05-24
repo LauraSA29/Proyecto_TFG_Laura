@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  odoo:
+    container_name: odoo-container
+    image: odoo:latest
+    volumes:
+      - odoo_data:/var/lib/odoo
+    ports:
+      - "8069:8069"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=odoo
+      - DB_PASSWORD=odoo
+    command: ["odoo", "-d", "odoo", "-i", "base"]
+    networks:
+      - odoo_network
+
+  db:
+    image: postgres:latest
+    container_name: odoo-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: odoo
+    volumes:
+      - odoo_db_data:/var/lib/postgresql/data
+    networks:
+      - odoo_network
+
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+        - 80:80
+        - 443:443
+    volumes:
+        - ./nginx/conf:/etc/nginx/conf.d
+        - ./certbot/conf:/etc/nginx/ssl
+        - ./certbot/data:/var/www/html
+
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    command: certonly --webroot --webroot-path=/var/www/html -- email lau234697@gmail.com --agree-tos --no-eff-email --d domain.com -d tfglaura.duckdns.org
+    volumes:
+        - ./certbot/conf:/etc/letsencrypt
+        - ./certbot/logs:/var/log/letsencrypt
+        - ./certbot/data:/var/www/html
+
+volumes:
+  odoo_db_data:
+  odoo_data:
+
+networks:
+  odoo_network:
+    driver: bridge

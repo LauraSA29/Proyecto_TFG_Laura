@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Admin as "Administrador"
+actor Worker as "Trabajador"
+
+rectangle {
+
+  usecase "Crear tarea, reunión o pedido"
+  usecase "Modificar tarea, reunión o pedido"
+  usecase "Eliminar tarea, reunión o pedido"
+  usecase "Consultar tareas, reuniones o pedidos asignados"
+}
+
+' Relaciones del Administrador
+Admin --> "Crear tarea, reunión o pedido"
+Admin --> "Modificar tarea, reunión o pedido"
+Admin --> "Eliminar tarea, reunión o pedido"
+Admin --> "Consultar tareas, reuniones o pedidos asignados"
+
+' Relaciones del Trabajador
+Worker --> "Consultar tareas, reuniones o pedidos asignados"
+
+@enduml
+
