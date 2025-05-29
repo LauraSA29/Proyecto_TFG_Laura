@@ -1,11 +1,43 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'chat_screen.dart';
-import 'login_screen.dart';
-import 'agenda_screen.dart';
+import 'package:provider/provider.dart';
+import 'presentation/routes/routes.dart';
+import 'presentation/viewmodels/tarea_viewmodel.dart';
+import 'presentation/viewmodels/login_viewmodel.dart';
+import 'data/repositories/tarea_repository_impl.dart';
+import 'data/datasources/tarea_remote_datasource_impl.dart';
+import 'domain/usecases/actualizar_estado_tarea.dart';
+import 'domain/usecases/crear_tarea.dart';
+import 'domain/usecases/eliminar_tarea.dart';
+import 'domain/usecases/obtener_tareas.dart';
+import 'domain/usecases/login_usuario.dart';
+import '/data/repositories/usuario_repository_impl.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  final tareaRemote = TareaRemoteDataSourceImpl();
+  final tareaRepository = TareaRepositoryImpl(tareaRemote);
+  final usuarioRepository = UsuarioRepositoryImpl();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => TareaViewModel(
+            obtenerTareasUseCase: ObtenerTareasUseCase(tareaRepository),
+            crearTareaUseCase: CrearTareaUseCase(tareaRepository),
+            actualizarEstadoUseCase: ActualizarEstadoTareaUseCase(tareaRepository),
+            eliminarTareaUseCase: EliminarTareaUseCase(tareaRepository),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LoginViewModel(
+            loginUsuarioUseCase: LoginUsuarioUseCase(usuarioRepository),
+          ),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,18 +46,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gestión de Empresa',
+      title: 'Tasknelia',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(), // ← esta es ahora la pantalla inicial
-      routes: {
-        '/home': (context) => const HomeScreen(),
-        '/chat': (context) => const ChatScreen(),
-        '/agenda': (context) => const AgendaScreen(), 
-      },
+      initialRoute: AppRoutes.login,
+      routes: AppRoutes.getRoutes(),
     );
   }
 }
