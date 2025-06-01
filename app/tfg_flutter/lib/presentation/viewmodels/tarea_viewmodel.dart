@@ -56,4 +56,13 @@ class TareaViewModel with ChangeNotifier {
     await eliminarTareaUseCase(id);
     await cargarTareas(); // Refresca tras eliminar
   }
+
+  Future<void> actualizarTarea(Tarea tarea) async {
+  // Usamos el caso de uso de actualizarEstado si solo cambia el estado,
+  // pero en el futuro puedes crear un caso de uso específico para editar todo.
+  // Por ahora, lo eliminamos y volvemos a crear con mismos datos y nuevo contenido.
+
+  await eliminarTarea(tarea.id);
+  await crearTarea(tarea);
+}
 }

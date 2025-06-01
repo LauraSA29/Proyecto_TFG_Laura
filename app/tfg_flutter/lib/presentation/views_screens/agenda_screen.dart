@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '/domain/entities/tarea.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/tarea_viewmodel.dart';
+import 'editar_tarea_screen.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
@@ -12,7 +13,11 @@ class AgendaScreen extends StatefulWidget {
 }
 
 class _AgendaScreenState extends State<AgendaScreen> {
-  String filtroActual = 'Todo';
+  String filtroTipo = 'Tareas';
+  String filtroEstado = 'Todas';
+  bool ordenAscendente = true;
+  String busqueda = '';
+
 
   @override
   void initState() {
@@ -34,6 +39,37 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
     final futuras = tareas.where((t) =>
         t.fecha.isAfter(DateTime(hoy.year, hoy.month, hoy.day))).toList();
+
+    List<Tarea> tareasFiltradas = tareas;
+
+    // Filtrar por tipo (por ahora solo 'Tareas' tiene contenido)
+    if (filtroTipo != 'Todo' && filtroTipo != 'Tareas') {
+      tareasFiltradas = []; // En el futuro filtrará Reuniones/Pedidos
+    }
+
+    // Filtrar por estado
+    if (filtroEstado == 'Pendientes') {
+      tareasFiltradas = tareasFiltradas.where((t) => t.estado.toLowerCase() == 'pendiente').toList();
+    } else if (filtroEstado == 'Completadas') {
+      tareasFiltradas = tareasFiltradas.where((t) => t.estado.toLowerCase() == 'completada').toList();
+    }
+
+    if (busqueda.isNotEmpty) {
+      tareasFiltradas = tareasFiltradas.where((t) {
+        return t.titulo.toLowerCase().contains(busqueda) ||
+              t.descripcion.toLowerCase().contains(busqueda);
+      }).toList();
+    }
+
+    tareasFiltradas.sort((a, b) {
+        if (ordenAscendente) {
+          return a.fecha.compareTo(b.fecha);
+        } else {
+          return b.fecha.compareTo(a.fecha);
+        }
+      }
+    );
+
 
     return Scaffold(
       backgroundColor: AppColors.fondoClaro,
@@ -84,18 +120,66 @@ class _AgendaScreenState extends State<AgendaScreen> {
             ),
           ),
 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Buscar por título o descripción",
+                prefixIcon: const Icon(Icons.search),
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  busqueda = value.trim().toLowerCase();
+                });
+              },
+            ),
+          ),
+
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Orden por fecha",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textoOscuro,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  ordenAscendente ? Icons.arrow_upward : Icons.arrow_downward,
+                  color: AppColors.textoOscuro,
+                ),
+                tooltip: ordenAscendente ? "Más antiguas primero" : "Más recientes primero",
+                onPressed: () => setState(() {
+                  ordenAscendente = !ordenAscendente;
+                }),
+              ),
+            ],
+          ),
+
+
           const SizedBox(height: 10),
 
           // Filtros tipo tabla
+          // Filtro por tipo
           Container(
             color: AppColors.grisCampos.withOpacity(0.3),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: ['Todo', 'Tareas', 'Reuniones', 'Pedidos'].map((tipo) {
-                final isActive = tipo == filtroActual;
+                final isActive = tipo == filtroTipo;
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => filtroActual = tipo),
+                    onTap: () => setState(() => filtroTipo = tipo),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
@@ -121,6 +205,43 @@ class _AgendaScreenState extends State<AgendaScreen> {
               }).toList(),
             ),
           ),
+
+          // Filtro por estado
+          Container(
+            color: AppColors.grisCampos.withOpacity(0.15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: ['Todas', 'Pendientes', 'Completadas'].map((estado) {
+                final isActive = estado == filtroEstado;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => filtroEstado = estado),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isActive ? AppColors.grisCampos : Colors.transparent,
+                        border: Border(
+                          right: BorderSide(
+                            color: Colors.white.withOpacity(0.4),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        estado,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                          color: AppColors.textoOscuro,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
 
           Expanded(
             child: tareaVM.isLoading
@@ -182,8 +303,9 @@ class TareaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final estadoColor = tarea.estado == 'Completada' ? Colors.green : Colors.red;
-    final estadoTexto = tarea.estado == 'Completada' ? 'Completada' : 'Pendiente';
+    final estadoCompletada = tarea.estado.toLowerCase() == 'completada';
+    final estadoColor = estadoCompletada ? Colors.green : Colors.red;
+    final estadoTexto = estadoCompletada ? 'Completada' : 'Pendiente';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -213,9 +335,65 @@ class TareaItem extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            "${tarea.fecha.day} ${_mes(tarea.fecha.month)}",
-            style: const TextStyle(fontWeight: FontWeight.w500),
+          Column(
+            children: [
+              Text(
+                "${tarea.fecha.day} ${_mes(tarea.fecha.month)}",
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!estadoCompletada)
+                    IconButton(
+                      icon: const Icon(Icons.check_circle, color: Colors.green),
+                      tooltip: 'Marcar como completada',
+                      onPressed: () async {
+                        await Provider.of<TareaViewModel>(context, listen: false)
+                            .actualizarEstado(tarea.id, 'completada');
+                      },
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EditarTareaScreen(tarea: tarea),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _confirmarEliminar(context, tarea.id),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmarEliminar(BuildContext context, String id) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Eliminar tarea"),
+        content: const Text("¿Estás segura de que quieres eliminar esta tarea?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await Provider.of<TareaViewModel>(context, listen: false).eliminarTarea(id);
+            },
+            child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

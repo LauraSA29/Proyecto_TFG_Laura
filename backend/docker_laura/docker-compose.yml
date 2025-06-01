@@ -45,15 +45,19 @@ services:
         - ./nginx/conf:/etc/nginx/conf.d
         - ./certbot/conf:/etc/nginx/ssl
         - ./certbot/data:/var/www/html
+    networks:
+      - odoo_network
 
   certbot:
     container_name: certbot
     image: certbot/certbot:latest
-    command: certonly --webroot --webroot-path=/var/www/html -- email lau234697@gmail.com --agree-tos --no-eff-email --d domain.com -d tfglaura.duckdns.org
+    command: certonly --webroot --webroot-path=/var/www/html --email lau234697@gmail.com --agree-tos --no-eff-email -d tfglaura.duckdns.org
     volumes:
         - ./certbot/conf:/etc/letsencrypt
         - ./certbot/logs:/var/log/letsencrypt
         - ./certbot/data:/var/www/html
+    networks:
+      - odoo_network
 
 volumes:
   odoo_db_data:

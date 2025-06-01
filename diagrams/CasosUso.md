@@ -1,3 +1,4 @@
+```plantuml
 @startuml
 left to right direction
 skinparam packageStyle rectangle
@@ -13,14 +14,11 @@ rectangle {
   usecase "Consultar tareas, reuniones o pedidos asignados"
 }
 
-' Relaciones del Administrador
 Admin --> "Crear tarea, reunión o pedido"
 Admin --> "Modificar tarea, reunión o pedido"
 Admin --> "Eliminar tarea, reunión o pedido"
 Admin --> "Consultar tareas, reuniones o pedidos asignados"
 
-' Relaciones del Trabajador
 Worker --> "Consultar tareas, reuniones o pedidos asignados"
 
 @enduml
-

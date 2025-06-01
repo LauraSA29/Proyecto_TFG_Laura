@@ -4,27 +4,38 @@ import '/theme/colores.dart';
 import '/domain/entities/tarea.dart';
 import '/presentation/viewmodels/tarea_viewmodel.dart';
 
-class CrearTareaScreen extends StatefulWidget {
-  const CrearTareaScreen({super.key});
+class EditarTareaScreen extends StatefulWidget {
+  final Tarea tarea;
+
+  const EditarTareaScreen({super.key, required this.tarea});
 
   @override
-  State<CrearTareaScreen> createState() => _CrearTareaScreenState();
+  State<EditarTareaScreen> createState() => _EditarTareaScreenState();
 }
 
-class _CrearTareaScreenState extends State<CrearTareaScreen> {
-  final _tituloController = TextEditingController();
-  final _descripcionController = TextEditingController();
-  DateTime? _fechaSeleccionada;
+class _EditarTareaScreenState extends State<EditarTareaScreen> {
+  late TextEditingController _tituloController;
+  late TextEditingController _descripcionController;
+  late DateTime _fechaSeleccionada;
 
   bool _enviando = false;
   String? errorTitulo;
   String? errorDescripcion;
 
 
-  void _crearTarea() async {
+  @override
+  void initState() {
+    super.initState();
+    _tituloController = TextEditingController(text: widget.tarea.titulo);
+    _descripcionController = TextEditingController(text: widget.tarea.descripcion);
+    _fechaSeleccionada = widget.tarea.fecha;
+  }
+
+  void _editarTarea() async {
   final titulo = _tituloController.text.trim();
   final descripcion = _descripcionController.text.trim();
   final fecha = _fechaSeleccionada;
+
   final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
 
   setState(() {
@@ -55,6 +66,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
   }
 
   final existeDuplicada = tareaVM.tareas.any((t) =>
+      t.id != widget.tarea.id &&
       t.titulo.toLowerCase() == titulo.toLowerCase() &&
       t.fecha.year == fecha?.year &&
       t.fecha.month == fecha?.month &&
@@ -62,40 +74,51 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
 
   if (existeDuplicada) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ya existe una tarea con ese título y fecha')),
+      const SnackBar(content: Text('Ya existe otra tarea con ese título y fecha')),
     );
     hayErrores = true;
   }
 
   if (hayErrores) return;
 
+  final noHayCambios = titulo == widget.tarea.titulo.trim() &&
+                     descripcion == widget.tarea.descripcion.trim() &&
+                     fecha == widget.tarea.fecha;
+
+  if (noHayCambios) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No se han hecho cambios')),
+    );
+    return;
+  }
+
   setState(() => _enviando = true);
 
-  final nuevaTarea = Tarea(
-    id: '',
+  final tareaEditada = Tarea(
+    id: widget.tarea.id,
     titulo: titulo,
     descripcion: descripcion,
-    estado: 'pendiente',
+    estado: widget.tarea.estado,
     fecha: fecha!,
   );
 
-  await tareaVM.crearTarea(nuevaTarea);
+  await tareaVM.actualizarTarea(tareaEditada);
   setState(() => _enviando = false);
   Navigator.pop(context);
 }
 
+
+
   void _seleccionarFecha() async {
-    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: now,
-      lastDate: DateTime(now.year + 5),
+      initialDate: _fechaSeleccionada,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
     );
+
     if (picked != null) {
-      setState(() {
-        _fechaSeleccionada = picked;
-      });
+      setState(() => _fechaSeleccionada = picked);
     }
   }
 
@@ -103,7 +126,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Crear Tarea"),
+        title: const Text("Editar Tarea"),
         backgroundColor: AppColors.azulPrincipal,
       ),
       backgroundColor: AppColors.fondoClaro,
@@ -133,20 +156,19 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                 fillColor: Colors.white,
               ),
             ),
+
             const SizedBox(height: 12),
-            
+
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    _fechaSeleccionada == null
-                        ? "Fecha no seleccionada"
-                        : "${_fechaSeleccionada!.day}/${_fechaSeleccionada!.month}/${_fechaSeleccionada!.year}",
+                    "${_fechaSeleccionada.day}/${_fechaSeleccionada.month}/${_fechaSeleccionada.year}",
                   ),
                 ),
                 TextButton(
                   onPressed: _seleccionarFecha,
-                  child: const Text("Seleccionar Fecha"),
+                  child: const Text("Cambiar Fecha"),
                 ),
               ],
             ),
@@ -155,11 +177,11 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                 ? const CircularProgressIndicator()
                 : ElevatedButton.icon(
                     icon: const Icon(Icons.check),
-                    label: const Text("Crear Tarea"),
+                    label: const Text("Guardar Cambios"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.azulPrincipal,
                     ),
-                    onPressed: _crearTarea,
+                    onPressed: _editarTarea,
                   )
           ],
         ),
