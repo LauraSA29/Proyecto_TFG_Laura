@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'presentation/routes/routes.dart';
 import 'presentation/viewmodels/tarea_viewmodel.dart';
 import 'presentation/viewmodels/login_viewmodel.dart';
+import 'presentation/viewmodels/usuario_viewmodel.dart';
 import 'data/repositories/tarea_repository_impl.dart';
 import 'data/datasources/tarea_remote_datasource_impl.dart';
 import 'domain/usecases/actualizar_estado_tarea.dart';
@@ -12,7 +14,6 @@ import 'domain/usecases/obtener_tareas.dart';
 import 'domain/usecases/login_usuario.dart';
 import '/data/repositories/usuario_repository_impl.dart';
 
-
 void main() {
   final tareaRemote = TareaRemoteDataSourceImpl();
   final tareaRepository = TareaRepositoryImpl(tareaRemote);
@@ -21,6 +22,9 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => UsuarioViewModel()..cargarSesionGuardada(),
+        ),
         ChangeNotifierProvider(
           create: (_) => TareaViewModel(
             obtenerTareasUseCase: ObtenerTareasUseCase(tareaRepository),
@@ -54,6 +58,17 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppRoutes.login,
       routes: AppRoutes.getRoutes(),
+      // 👇 Soporte para localización
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('es'), // Español
+        Locale('en'), // Inglés (si lo quieres como respaldo)
+      ],
+      locale: const Locale('es'), // <- Idioma predeterminado: español
     );
   }
 }

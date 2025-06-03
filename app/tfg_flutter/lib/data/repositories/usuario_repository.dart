@@ -1,4 +1,4 @@
-import '/domain/entities/usuario.dart';
+import '/domain/entities/Usuario.dart';
 
 abstract class UsuarioRepository {
   Future<Usuario?> login(String correo, String password);

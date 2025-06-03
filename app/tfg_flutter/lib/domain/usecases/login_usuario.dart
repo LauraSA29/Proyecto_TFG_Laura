@@ -1,4 +1,4 @@
-import '/domain/entities/usuario.dart';
+import '/domain/entities/Usuario.dart';
 import '/data/repositories/usuario_repository.dart';
 
 class LoginUsuarioUseCase {

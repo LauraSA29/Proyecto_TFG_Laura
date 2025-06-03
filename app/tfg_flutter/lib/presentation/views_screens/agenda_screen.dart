@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '/domain/entities/tarea.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/tarea_viewmodel.dart';
+import '/presentation/viewmodels/usuario_viewmodel.dart';
 import 'editar_tarea_screen.dart';
 
 class AgendaScreen extends StatefulWidget {
@@ -13,24 +14,21 @@ class AgendaScreen extends StatefulWidget {
 }
 
 class _AgendaScreenState extends State<AgendaScreen> {
-  String filtroTipo = 'Tareas';
-  String filtroEstado = 'Todas';
-  bool ordenAscendente = true;
-  String busqueda = '';
-
+  String filtroActual = 'Todo';
 
   @override
   void initState() {
     super.initState();
-    final vm = Provider.of<TareaViewModel>(context, listen: false);
-    vm.cargarTareas();
+    Provider.of<TareaViewModel>(context, listen: false).cargarTareas();
   }
 
   @override
   Widget build(BuildContext context) {
     final tareaVM = Provider.of<TareaViewModel>(context);
-    final tareas = tareaVM.tareas;
+    final usuarioVM = Provider.of<UsuarioViewModel>(context);
+    final isAdmin = usuarioVM.usuario?.tipo.toLowerCase() == 'admin';
 
+    final tareas = tareaVM.tareas;
     final hoy = DateTime.now();
     final hoyTareas = tareas.where((t) =>
         t.fecha.year == hoy.year &&
@@ -40,77 +38,12 @@ class _AgendaScreenState extends State<AgendaScreen> {
     final futuras = tareas.where((t) =>
         t.fecha.isAfter(DateTime(hoy.year, hoy.month, hoy.day))).toList();
 
-    List<Tarea> tareasFiltradas = tareas;
-
-    // Filtrar por tipo (por ahora solo 'Tareas' tiene contenido)
-    if (filtroTipo != 'Todo' && filtroTipo != 'Tareas') {
-      tareasFiltradas = []; // En el futuro filtrará Reuniones/Pedidos
-    }
-
-    // Filtrar por estado
-    if (filtroEstado == 'Pendientes') {
-      tareasFiltradas = tareasFiltradas.where((t) => t.estado.toLowerCase() == 'pendiente').toList();
-    } else if (filtroEstado == 'Completadas') {
-      tareasFiltradas = tareasFiltradas.where((t) => t.estado.toLowerCase() == 'completada').toList();
-    }
-
-    if (busqueda.isNotEmpty) {
-      tareasFiltradas = tareasFiltradas.where((t) {
-        return t.titulo.toLowerCase().contains(busqueda) ||
-              t.descripcion.toLowerCase().contains(busqueda);
-      }).toList();
-    }
-
-    tareasFiltradas.sort((a, b) {
-        if (ordenAscendente) {
-          return a.fecha.compareTo(b.fecha);
-        } else {
-          return b.fecha.compareTo(a.fecha);
-        }
-      }
-    );
-
-
     return Scaffold(
       backgroundColor: AppColors.fondoClaro,
       body: Column(
         children: [
-          // Encabezado curvo sencillo con esquina redonda
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: AppColors.azulPrincipal,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(80),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const CircleAvatar(
-                  radius: 25,
-                  backgroundImage: AssetImage('assets/profile.jpg'),
-                ),
-                const Text(
-                  "¡Bienvenido!",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textoOscuro,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chat_rounded),
-                  color: AppColors.textoOscuro,
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-
+          _buildEncabezado(),
           const SizedBox(height: 10),
-
           const Text(
             "Agenda",
             style: TextStyle(
@@ -119,162 +52,20 @@ class _AgendaScreenState extends State<AgendaScreen> {
               color: AppColors.textoOscuro,
             ),
           ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar por título o descripción",
-                prefixIcon: const Icon(Icons.search),
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  busqueda = value.trim().toLowerCase();
-                });
-              },
-            ),
-          ),
-
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Orden por fecha",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textoOscuro,
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  ordenAscendente ? Icons.arrow_upward : Icons.arrow_downward,
-                  color: AppColors.textoOscuro,
-                ),
-                tooltip: ordenAscendente ? "Más antiguas primero" : "Más recientes primero",
-                onPressed: () => setState(() {
-                  ordenAscendente = !ordenAscendente;
-                }),
-              ),
-            ],
-          ),
-
-
           const SizedBox(height: 10),
-
-          // Filtros tipo tabla
-          // Filtro por tipo
-          Container(
-            color: AppColors.grisCampos.withOpacity(0.3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: ['Todo', 'Tareas', 'Reuniones', 'Pedidos'].map((tipo) {
-                final isActive = tipo == filtroTipo;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => filtroTipo = tipo),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isActive ? AppColors.grisCampos : Colors.transparent,
-                        border: Border(
-                          right: BorderSide(
-                            color: Colors.white.withOpacity(0.4),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        tipo,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                          color: AppColors.textoOscuro,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-
-          // Filtro por estado
-          Container(
-            color: AppColors.grisCampos.withOpacity(0.15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: ['Todas', 'Pendientes', 'Completadas'].map((estado) {
-                final isActive = estado == filtroEstado;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => filtroEstado = estado),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isActive ? AppColors.grisCampos : Colors.transparent,
-                        border: Border(
-                          right: BorderSide(
-                            color: Colors.white.withOpacity(0.4),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        estado,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                          color: AppColors.textoOscuro,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-
-
+          _buildFiltroTipo(),
           Expanded(
             child: tareaVM.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView(
                     children: [
                       if (hoyTareas.isNotEmpty) ...[
-                        const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: Text(
-                            "Hoy",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: AppColors.textoOscuro,
-                            ),
-                          ),
-                        ),
-                        ...hoyTareas.map((t) => TareaItem(tarea: t)),
+                        _seccion("Hoy"),
+                        ...hoyTareas.map((t) => TareaItem(tarea: t, isAdmin: isAdmin)),
                       ],
                       if (futuras.isNotEmpty) ...[
-                        const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: Text(
-                            "Más adelante",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: AppColors.textoOscuro,
-                            ),
-                          ),
-                        ),
-                        ...futuras.map((t) => TareaItem(tarea: t)),
+                        _seccion("Más adelante"),
+                        ...futuras.map((t) => TareaItem(tarea: t, isAdmin: isAdmin)),
                       ],
                       if (hoyTareas.isEmpty && futuras.isEmpty)
                         const Center(
@@ -293,19 +84,106 @@ class _AgendaScreenState extends State<AgendaScreen> {
       ),
     );
   }
+
+  Widget _buildEncabezado() {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColors.azulPrincipal,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(80),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const CircleAvatar(
+            radius: 25,
+            backgroundImage: AssetImage('assets/profile.jpg'),
+          ),
+          const Text(
+            "¡Bienvenido!",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textoOscuro,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.chat_rounded),
+            color: AppColors.textoOscuro,
+            onPressed: () {
+              Navigator.pushNamed(context, '/chat');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFiltroTipo() {
+    return Container(
+      color: AppColors.grisCampos.withOpacity(0.3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: ['Todo', 'Tareas', 'Reuniones', 'Pedidos'].map((tipo) {
+          final isActive = tipo == filtroActual;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => filtroActual = tipo),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isActive ? AppColors.grisCampos : Colors.transparent,
+                  border: Border(
+                    right: BorderSide(
+                      color: Colors.white.withOpacity(0.4),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  tipo,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    color: AppColors.textoOscuro,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _seccion(String texto) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Text(
+        texto,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: AppColors.textoOscuro,
+        ),
+      ),
+    );
+  }
 }
 
-// Widget para mostrar cada tarea
 class TareaItem extends StatelessWidget {
   final Tarea tarea;
+  final bool isAdmin;
 
-  const TareaItem({super.key, required this.tarea});
+  const TareaItem({super.key, required this.tarea, required this.isAdmin});
 
   @override
   Widget build(BuildContext context) {
-    final estadoCompletada = tarea.estado.toLowerCase() == 'completada';
-    final estadoColor = estadoCompletada ? Colors.green : Colors.red;
-    final estadoTexto = estadoCompletada ? 'Completada' : 'Pendiente';
+    final estadoColor = tarea.estado.toLowerCase() == 'completada' ? Colors.green : Colors.red;
+    final estadoTexto = tarea.estado.toLowerCase() == 'completada' ? 'Completada' : 'Pendiente';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -323,51 +201,51 @@ class TareaItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  tarea.titulo,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text(tarea.titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(
-                  estadoTexto,
-                  style: TextStyle(color: estadoColor, fontSize: 13),
-                ),
+                Text(estadoTexto, style: TextStyle(color: estadoColor, fontSize: 13)),
               ],
             ),
           ),
           Column(
             children: [
-              Text(
-                "${tarea.fecha.day} ${_mes(tarea.fecha.month)}",
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
+              Text("${tarea.fecha.day} ${_mes(tarea.fecha.month)}",
+                  style: const TextStyle(fontWeight: FontWeight.w500)),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!estadoCompletada)
-                    IconButton(
-                      icon: const Icon(Icons.check_circle, color: Colors.green),
-                      tooltip: 'Marcar como completada',
-                      onPressed: () async {
-                        await Provider.of<TareaViewModel>(context, listen: false)
-                            .actualizarEstado(tarea.id, 'completada');
-                      },
-                    ),
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    icon: Icon(
+                      tarea.estado.toLowerCase() == 'completada'
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: AppColors.azulPrincipal,
+                    ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditarTareaScreen(tarea: tarea),
-                        ),
-                      );
+                      final nuevoEstado = tarea.estado.toLowerCase() == 'completada'
+                          ? 'pendiente'
+                          : 'completada';
+                      Provider.of<TareaViewModel>(context, listen: false)
+                          .actualizarEstado(tarea.id, nuevoEstado);
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _confirmarEliminar(context, tarea.id),
-                  ),
+                  if (isAdmin) ...[
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: AppColors.azulPrincipal),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditarTareaScreen(tarea: tarea),
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: AppColors.grisCampos),
+                      onPressed: () => _confirmarEliminar(context, tarea.id),
+                    ),
+                  ],
                 ],
               ),
             ],
@@ -384,10 +262,7 @@ class TareaItem extends StatelessWidget {
         title: const Text("Eliminar tarea"),
         content: const Text("¿Estás segura de que quieres eliminar esta tarea?"),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancelar")),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);

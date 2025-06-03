@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/login_viewmodel.dart';
-import 'home_screen.dart';
+import '/presentation/viewmodels/usuario_viewmodel.dart';
+import '/domain/entities/Usuario.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,46 +19,104 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginVM = Provider.of<LoginViewModel>(context);
+    final usuarioVM = Provider.of<UsuarioViewModel>(context, listen: false);
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeader(context),
-              const SizedBox(height: 24),
-              _buildTextField('Correo', Icons.email, _correoController, false),
-              const SizedBox(height: 16),
-              _buildTextField('Contraseña', Icons.vpn_key, _passwordController, true),
-              const SizedBox(height: 8),
-              if (loginVM.error != null)
-                Text(loginVM.error!, style: const TextStyle(color: Colors.red)),
-              const SizedBox(height: 16),
-              loginVM.isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () async {
-                        final correo = _correoController.text.trim();
-                        final password = _passwordController.text.trim();
+        child: Stack(
+          children: [
+            // Circulitos en la parte blanca
+            Positioned(top: 470, left: 20, child: _buildCircle(18, opacity: 0.2)),
+            Positioned(top: 520, right: 25, child: _buildCircle(12, opacity: 0.2)),
+            Positioned(bottom: 40, left: 30, child: _buildCircle(20, opacity: 0.1)),
+            Positioned(bottom: 10, right: 20, child: _buildCircle(24, opacity: 0.1)),
 
-                        final success = await loginVM.login(correo, password);
-                        if (success && context.mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomeScreen()),
-                          );
-                        }
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 24),
+                  _buildTextField('Correo', Icons.email, _correoController, false),
+                  const SizedBox(height: 16),
+                  _buildTextField('Contraseña', Icons.vpn_key, _passwordController, true),
+
+                  // Texto "¿Olvidaste tu contraseña?" centrado y clicable
+                  Padding(
+                    padding: const EdgeInsets.only(top: 26),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/recuperar'); // o la ruta correspondiente
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.azulPrincipal,
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(20),
+                      child: const Center(
+                        child: Text(
+                          '¿Olvidaste tu contraseña?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
-                      child: const Icon(Icons.double_arrow, size: 32, color: Colors.white),
                     ),
-              const SizedBox(height: 20),
-            ],
-          ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  if (loginVM.error != null)
+                    Text(loginVM.error!, style: const TextStyle(color: Colors.red)),
+                  const SizedBox(height: 16),
+
+                  loginVM.isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: () async {
+                            final correo = _correoController.text.trim();
+                            final password = _passwordController.text.trim();
+
+                            if (correo.isEmpty || password.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Completa todos los campos")),
+                              );
+                              return;
+                            }
+
+                            if (correo == "admin@tfg.com" && password == "admin123") {
+                              final usuario = Usuario(
+                                id: "1",
+                                nombre: "Administrador",
+                                correo: correo,
+                                tipo: "admin",
+                              );
+                              await usuarioVM.iniciarSesion(usuario);
+                              Navigator.pushReplacementNamed(context, '/home');
+                            } else if (correo == "user@tfg.com" && password == "user123") {
+                              final usuario = Usuario(
+                                id: "2",
+                                nombre: "Usuario Normal",
+                                correo: correo,
+                                tipo: "normal",
+                              );
+                              await usuarioVM.iniciarSesion(usuario);
+                              Navigator.pushReplacementNamed(context, '/home');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Datos incorrectos")),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.azulPrincipal,
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(28), // más grande
+                          ),
+                          child: const Icon(Icons.double_arrow, size: 40, color: Colors.white),
+                        ),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -76,14 +135,42 @@ class _LoginScreenState extends State<LoginScreen> {
             color: AppColors.azulPrincipal,
           ),
         ),
+
+        // Circulitos decorativos
+        Positioned(
+          top: size.height * 0.10 - 20,
+          left: size.width / 2 - 90,
+          child: _buildCircle(24),
+        ),
+        Positioned(
+          top: size.height * 0.10 - 10,
+          right: size.width / 2 - 70,
+          child: _buildCircle(16),
+        ),
+        Positioned(
+          top: size.height * 0.10 + 80,
+          right: size.width / 2 - 100,
+          child: _buildCircle(20),
+        ),
+
+        // Avatar con borde
         Positioned(
           top: size.height * 0.10,
-          left: size.width / 2 - 50,
-          child: const CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/images/profile.jpg'),
+          left: size.width / 2 - 60,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: const CircleAvatar(
+              radius: 56,
+              backgroundImage: AssetImage('assets/images/profile.jpg'),
+            ),
           ),
         ),
+
+        // Texto "¡Bienvenido!"
         Positioned(
           top: size.height * 0.27,
           left: 0,
@@ -109,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        style: const TextStyle(fontFamily: 'Roboto'), // Asegura fuente uniforme
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon),
@@ -118,6 +206,17 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCircle(double size, {double opacity = 1}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(opacity),
+        shape: BoxShape.circle,
       ),
     );
   }

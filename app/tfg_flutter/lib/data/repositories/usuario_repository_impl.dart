@@ -1,4 +1,4 @@
-import '/domain/entities/usuario.dart';
+import '/domain/entities/Usuario.dart';
 import 'usuario_repository.dart';
 
 class UsuarioRepositoryImpl implements UsuarioRepository {

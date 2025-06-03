@@ -2,7 +2,7 @@ class Usuario {
   final String id;
   final String nombre;
   final String correo;
-  final String tipo; // "admin" o "trabajador"
+  final String tipo; // "admin" o "normal"
 
   Usuario({
     required this.id,
@@ -10,4 +10,6 @@ class Usuario {
     required this.correo,
     required this.tipo,
   });
+
+  bool get esAdmin => tipo.toLowerCase() == 'admin';
 }
