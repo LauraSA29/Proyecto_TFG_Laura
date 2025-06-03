@@ -58,30 +58,35 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Positioned.fill(
           child: Align(
-            alignment: Alignment.center,
+            alignment: const Alignment(0, -0.3), // <- ¡Esto sube el contenido!
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const CircleAvatar(
-                      radius: 22,
-                      backgroundImage: AssetImage('assets/profile.jpg'),
-                    ),
-                  ),
-                  Text(
-                    "Hola, $nombre",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: AppColors.textoOscuro,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const CircleAvatar(
+                          radius: 22,
+                          backgroundImage: AssetImage('assets/profile.jpg'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Hola, $nombre",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.textoOscuro,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     children: [
@@ -117,15 +122,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: ElevatedButton(
-        onPressed: ruta != null
-            ? () => Navigator.pushNamed(context, ruta)
-            : null,
+        onPressed: ruta != null ? () => Navigator.pushNamed(context, ruta) : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.fondoCampos,
           foregroundColor: AppColors.textoOscuro,
           minimumSize: const Size(double.infinity, 50),
         ),
-        child: Text(texto),
+        child: Text(
+          texto,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
