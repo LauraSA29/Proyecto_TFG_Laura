@@ -7,4 +7,5 @@ class AppColors {
   static const textoOscuro = Color(0xFF545454);
   static const fondoCampos = Color(0xFFDBDBDB);
   static const grisCampos = Color(0xFF707377);
+  static const azulClarito = Color(0xFFE3F2FD);
 }

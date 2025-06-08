@@ -22,7 +22,6 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
   String? errorTitulo;
   String? errorDescripcion;
 
-
   @override
   void initState() {
     super.initState();
@@ -32,82 +31,83 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
   }
 
   void _editarTarea() async {
-  final titulo = _tituloController.text.trim();
-  final descripcion = _descripcionController.text.trim();
-  final fecha = _fechaSeleccionada;
+    final titulo = _tituloController.text.trim();
+    final descripcion = _descripcionController.text.trim();
+    final fecha = _fechaSeleccionada;
 
-  final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
+    final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
 
-  setState(() {
-    errorTitulo = null;
-    errorDescripcion = null;
-  });
+    setState(() {
+      errorTitulo = null;
+      errorDescripcion = null;
+    });
 
-  bool hayErrores = false;
+    bool hayErrores = false;
 
-  if (titulo.isEmpty) {
-    setState(() => errorTitulo = 'El título es obligatorio');
-    hayErrores = true;
-  } else if (titulo.length < 3) {
-    setState(() => errorTitulo = 'Mínimo 3 caracteres');
-    hayErrores = true;
-  }
+    if (titulo.isEmpty) {
+      setState(() => errorTitulo = 'El título es obligatorio');
+      hayErrores = true;
+    } else if (titulo.length < 3) {
+      setState(() => errorTitulo = 'Mínimo 3 caracteres');
+      hayErrores = true;
+    }
 
-  if (descripcion.isEmpty) {
-    setState(() => errorDescripcion = 'La descripción es obligatoria');
-    hayErrores = true;
-  }
+    if (descripcion.isEmpty) {
+      setState(() => errorDescripcion = 'La descripción es obligatoria');
+      hayErrores = true;
+    }
 
-  if (fecha == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Selecciona una fecha')),
+    if (fecha == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona una fecha')),
+      );
+      hayErrores = true;
+    }
+
+    final existeDuplicada = tareaVM.tareas.any((t) =>
+        t.id != widget.tarea.id &&
+        t.titulo.toLowerCase() == titulo.toLowerCase() &&
+        t.fecha.year == fecha.year &&
+        t.fecha.month == fecha.month &&
+        t.fecha.day == fecha.day);
+
+    if (existeDuplicada) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ya existe otra tarea con ese título y fecha')),
+      );
+      hayErrores = true;
+    }
+
+    if (hayErrores) return;
+
+    final noHayCambios = titulo == widget.tarea.titulo.trim() &&
+                         descripcion == widget.tarea.descripcion.trim() &&
+                         fecha == widget.tarea.fecha;
+
+    if (noHayCambios) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se han hecho cambios')),
+      );
+      return;
+    }
+
+    setState(() => _enviando = true);
+
+    final tareaEditada = Tarea(
+      id: widget.tarea.id,
+      titulo: titulo,
+      descripcion: descripcion,
+      estado: widget.tarea.estado,
+      fecha: fecha,
+      asignado: widget.tarea.asignado,
+      proyectoId: widget.tarea.proyectoId,
+      userIds: widget.tarea.userIds,
     );
-    hayErrores = true;
+
+    await tareaVM.actualizarTarea(tareaEditada);
+    setState(() => _enviando = false);
+    Navigator.pop(context);
   }
-
-  final existeDuplicada = tareaVM.tareas.any((t) =>
-      t.id != widget.tarea.id &&
-      t.titulo.toLowerCase() == titulo.toLowerCase() &&
-      t.fecha.year == fecha?.year &&
-      t.fecha.month == fecha?.month &&
-      t.fecha.day == fecha?.day);
-
-  if (existeDuplicada) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ya existe otra tarea con ese título y fecha')),
-    );
-    hayErrores = true;
-  }
-
-  if (hayErrores) return;
-
-  final noHayCambios = titulo == widget.tarea.titulo.trim() &&
-                     descripcion == widget.tarea.descripcion.trim() &&
-                     fecha == widget.tarea.fecha;
-
-  if (noHayCambios) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No se han hecho cambios')),
-    );
-    return;
-  }
-
-  setState(() => _enviando = true);
-
-  final tareaEditada = Tarea(
-    id: widget.tarea.id,
-    titulo: titulo,
-    descripcion: descripcion,
-    estado: widget.tarea.estado,
-    fecha: fecha!,
-  );
-
-  await tareaVM.actualizarTarea(tareaEditada);
-  setState(() => _enviando = false);
-  Navigator.pop(context);
-}
-
-
 
   void _seleccionarFecha() async {
     final picked = await showDatePicker(
@@ -125,11 +125,11 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.fondoClaro,
       appBar: AppBar(
         title: const Text("Editar Tarea"),
         backgroundColor: AppColors.azulPrincipal,
       ),
-      backgroundColor: AppColors.fondoClaro,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -156,23 +156,26 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
                 fillColor: Colors.white,
               ),
             ),
-
             const SizedBox(height: 12),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    "${_fechaSeleccionada.day}/${_fechaSeleccionada.month}/${_fechaSeleccionada.year}",
-                  ),
+                Text(
+                  "Fecha: ${_fechaSeleccionada.day}/${_fechaSeleccionada.month}/${_fechaSeleccionada.year}",
+                  style: const TextStyle(fontSize: 16),
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: _seleccionarFecha,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.azulPrincipal,
+                  ),
                   child: const Text("Cambiar Fecha"),
                 ),
               ],
             ),
             const SizedBox(height: 24),
+
             _enviando
                 ? const CircularProgressIndicator()
                 : ElevatedButton.icon(
@@ -180,9 +183,10 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
                     label: const Text("Guardar Cambios"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.azulPrincipal,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     ),
                     onPressed: _editarTarea,
-                  )
+                  ),
           ],
         ),
       ),

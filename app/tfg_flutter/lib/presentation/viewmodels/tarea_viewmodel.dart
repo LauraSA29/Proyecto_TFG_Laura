@@ -1,3 +1,4 @@
+// lib/presentation/viewmodels/tarea_viewmodel.dart
 import 'package:flutter/material.dart';
 import '/domain/entities/tarea.dart';
 import '/domain/usecases/obtener_tareas.dart';
@@ -27,14 +28,18 @@ class TareaViewModel with ChangeNotifier {
   String? get error => _error;
 
   Future<void> cargarTareas() async {
+    print('Cargando tareas...');
     _isLoading = true;
     notifyListeners();
 
     try {
       _tareas = await obtenerTareasUseCase();
+      print("Tareas cargadas: ${_tareas.length}");
       _error = null;
-    } catch (e) {
-      _error = 'Error al cargar tareas';
+    } catch (e, stacktrace) {
+      print('Error en cargarTareas(): $e');
+      print(stacktrace);
+      _error = 'Error al cargar tareas: $e';
       _tareas = [];
     }
 
@@ -42,27 +47,31 @@ class TareaViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+
   Future<void> crearTarea(Tarea tarea) async {
     await crearTareaUseCase(tarea);
-    await cargarTareas(); // Recarga tras crear
+    await cargarTareas();
   }
 
   Future<void> actualizarEstado(String id, String nuevoEstado) async {
     await actualizarEstadoUseCase(id, nuevoEstado);
-    await cargarTareas(); // Refresca tras cambiar estado
+    await cargarTareas();
   }
 
   Future<void> eliminarTarea(String id) async {
     await eliminarTareaUseCase(id);
-    await cargarTareas(); // Refresca tras eliminar
+    await cargarTareas();
   }
 
   Future<void> actualizarTarea(Tarea tarea) async {
-  // Usamos el caso de uso de actualizarEstado si solo cambia el estado,
-  // pero en el futuro puedes crear un caso de uso específico para editar todo.
-  // Por ahora, lo eliminamos y volvemos a crear con mismos datos y nuevo contenido.
 
   await eliminarTarea(tarea.id);
   await crearTarea(tarea);
+  }
+
+  Future<List<String>> obtenerUsuarios() async {
+  return await obtenerTareasUseCase.repository.obtenerUsuarios();
+  }
+
 }
-}
+

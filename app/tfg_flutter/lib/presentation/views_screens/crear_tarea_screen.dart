@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '/theme/colores.dart';
 import '/domain/entities/tarea.dart';
 import '/presentation/viewmodels/tarea_viewmodel.dart';
+import '/presentation/viewmodels/usuario_viewmodel.dart';
+import '/presentation/widget/header_widget.dart';
+import '/theme/colores.dart';
 
 class CrearTareaScreen extends StatefulWidget {
   const CrearTareaScreen({super.key});
@@ -12,158 +14,251 @@ class CrearTareaScreen extends StatefulWidget {
 }
 
 class _CrearTareaScreenState extends State<CrearTareaScreen> {
-  final _tituloController = TextEditingController();
-  final _descripcionController = TextEditingController();
+  final TextEditingController _tituloController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
   DateTime? _fechaSeleccionada;
 
   bool _enviando = false;
   String? errorTitulo;
   String? errorDescripcion;
 
+  List<String> _usuarios = [];
+  String? _usuarioSeleccionado;
+  bool _cargandoUsuarios = true;
 
-  void _crearTarea() async {
-  final titulo = _tituloController.text.trim();
-  final descripcion = _descripcionController.text.trim();
-  final fecha = _fechaSeleccionada;
-  final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
-
-  setState(() {
-    errorTitulo = null;
-    errorDescripcion = null;
-  });
-
-  bool hayErrores = false;
-
-  if (titulo.isEmpty) {
-    setState(() => errorTitulo = 'El título es obligatorio');
-    hayErrores = true;
-  } else if (titulo.length < 3) {
-    setState(() => errorTitulo = 'Mínimo 3 caracteres');
-    hayErrores = true;
+  @override
+  void initState() {
+    super.initState();
+    _cargarUsuarios();
   }
 
-  if (descripcion.isEmpty) {
-    setState(() => errorDescripcion = 'La descripción es obligatoria');
-    hayErrores = true;
+  Future<void> _cargarUsuarios() async {
+    try {
+      final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
+      final usuarios = await tareaVM.obtenerUsuarios();
+      setState(() {
+        _usuarios = usuarios;
+        _cargandoUsuarios = false;
+      });
+    } catch (e) {
+      setState(() {
+        _usuarios = [];
+        _cargandoUsuarios = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al cargar usuarios')),
+      );
+    }
   }
-
-  if (fecha == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Selecciona una fecha')),
-    );
-    hayErrores = true;
-  }
-
-  final existeDuplicada = tareaVM.tareas.any((t) =>
-      t.titulo.toLowerCase() == titulo.toLowerCase() &&
-      t.fecha.year == fecha?.year &&
-      t.fecha.month == fecha?.month &&
-      t.fecha.day == fecha?.day);
-
-  if (existeDuplicada) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ya existe una tarea con ese título y fecha')),
-    );
-    hayErrores = true;
-  }
-
-  if (hayErrores) return;
-
-  setState(() => _enviando = true);
-
-  final nuevaTarea = Tarea(
-    id: '',
-    titulo: titulo,
-    descripcion: descripcion,
-    estado: 'pendiente',
-    fecha: fecha!,
-  );
-
-  await tareaVM.crearTarea(nuevaTarea);
-  setState(() => _enviando = false);
-  Navigator.pop(context);
-}
 
   void _seleccionarFecha() async {
-    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: now,
-      lastDate: DateTime(now.year + 5),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
     );
+
     if (picked != null) {
-      setState(() {
-        _fechaSeleccionada = picked;
-      });
+      setState(() => _fechaSeleccionada = picked);
     }
+  }
+
+  void _crearTarea() async {
+    final titulo = _tituloController.text.trim();
+    final descripcion = _descripcionController.text.trim();
+    final fecha = _fechaSeleccionada;
+    final asignado = _usuarioSeleccionado;
+
+    final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
+
+    setState(() {
+      errorTitulo = null;
+      errorDescripcion = null;
+    });
+
+    bool hayErrores = false;
+
+    if (titulo.isEmpty) {
+      setState(() => errorTitulo = 'El título es obligatorio');
+      hayErrores = true;
+    } else if (titulo.length < 3) {
+      setState(() => errorTitulo = 'Mínimo 3 caracteres');
+      hayErrores = true;
+    }
+
+    if (descripcion.isEmpty) {
+      setState(() => errorDescripcion = 'La descripción es obligatoria');
+      hayErrores = true;
+    }
+
+    if (fecha == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona una fecha')),
+      );
+      hayErrores = true;
+    }
+
+    final existeDuplicada = tareaVM.tareas.any((t) =>
+        t.titulo.toLowerCase() == titulo.toLowerCase() &&
+        t.fecha.year == fecha?.year &&
+        t.fecha.month == fecha?.month &&
+        t.fecha.day == fecha?.day);
+
+    if (existeDuplicada) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ya existe una tarea con ese título y fecha')),
+      );
+      hayErrores = true;
+    }
+
+    if (hayErrores) return;
+
+    setState(() => _enviando = true);
+
+    final nuevaTarea = Tarea(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      titulo: titulo,
+      descripcion: descripcion,
+      estado: "pendiente",
+      fecha: fecha!,
+      asignado: asignado,
+      proyectoId: 1,
+      userIds: [],
+    );
+
+    await tareaVM.crearTarea(nuevaTarea);
+    setState(() => _enviando = false);
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Crear Tarea"),
-        backgroundColor: AppColors.azulPrincipal,
-      ),
-      backgroundColor: AppColors.fondoClaro,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(
-              controller: _tituloController,
-              decoration: InputDecoration(
-                labelText: "Título",
-                errorText: errorTitulo,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 12),
+    final usuarioVM = Provider.of<UsuarioViewModel>(context);
+    final usuario = usuarioVM.usuario;
 
-            TextField(
-              controller: _descripcionController,
-              decoration: InputDecoration(
-                labelText: "Descripción",
-                errorText: errorDescripcion,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                filled: true,
-                fillColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HeaderWidget(
+                nombre: usuario?.nombre ?? "Usuario",
+                fotoUrl: usuario?.fotoUrl,
+                usuarioVM: usuarioVM,
               ),
-            ),
-            const SizedBox(height: 12),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _fechaSeleccionada == null
-                        ? "Fecha no seleccionada"
-                        : "${_fechaSeleccionada!.day}/${_fechaSeleccionada!.month}/${_fechaSeleccionada!.year}",
-                  ),
-                ),
-                TextButton(
-                  onPressed: _seleccionarFecha,
-                  child: const Text("Seleccionar Fecha"),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _enviando
-                ? const CircularProgressIndicator()
-                : ElevatedButton.icon(
-                    icon: const Icon(Icons.check),
-                    label: const Text("Crear Tarea"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.azulPrincipal,
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 38),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildTextField(
+                      controller: _tituloController,
+                      label: "Título",
+                      errorText: errorTitulo,
                     ),
-                    onPressed: _crearTarea,
-                  )
-          ],
+                    const SizedBox(height: 20),
+                    _cargandoUsuarios
+                        ? const Center(child: CircularProgressIndicator())
+                        : DropdownButtonFormField<String>(
+                            value: _usuarioSeleccionado,
+                            items: _usuarios.map((usuario) {
+                              return DropdownMenuItem(
+                                value: usuario,
+                                child: Text(usuario),
+                              );
+                            }).toList(),
+                            decoration: _inputDecoration("Asignar a"),
+                            onChanged: (valor) {
+                              setState(() => _usuarioSeleccionado = valor);
+                            },
+                          ),
+                    const SizedBox(height: 30),
+                    _buildFechaPicker(),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _descripcionController,
+                      label: "Descripción",
+                      errorText: errorDescripcion,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 40),
+                    _enviando
+                        ? const Center(child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            onPressed: _crearTarea,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.azulPrincipal,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              "Crear Tarea",
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 32, 124, 230),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? errorText,
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: _inputDecoration(label).copyWith(errorText: errorText),
+    );
+  }
+
+  Widget _buildFechaPicker() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            _fechaSeleccionada != null
+                ? "Fecha: ${_fechaSeleccionada!.day}/${_fechaSeleccionada!.month}/${_fechaSeleccionada!.year}"
+                : "Sin fecha seleccionada",
+            style: const TextStyle(fontSize: 16),
+          ),
+        ),
+        IconButton(
+          onPressed: _seleccionarFecha,
+          icon: const Icon(Icons.calendar_today),
+          color: AppColors.azulPrincipal,
+        ),
+      ],
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: AppColors.fondoCampos,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 }

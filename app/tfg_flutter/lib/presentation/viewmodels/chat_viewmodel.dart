@@ -1,3 +1,4 @@
+// lib/presentation/viewmodels/chat_viewmodel.dart
 import 'package:flutter/material.dart';
 
 class ChatViewModel with ChangeNotifier {
@@ -11,8 +12,7 @@ class ChatViewModel with ChangeNotifier {
     _isSending = true;
     notifyListeners();
 
-    // TODO: Lógica para enviar mensaje
-    await Future.delayed(Duration(milliseconds: 500)); // Simulación
+    await Future.delayed(Duration(milliseconds: 500)); //Pruebas, dejar
     _mensajes.add(mensaje);
 
     _isSending = false;

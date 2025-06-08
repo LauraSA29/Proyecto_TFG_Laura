@@ -1,31 +1,35 @@
-import '/domain/entities/tarea.dart';
-import '/data/models/tarea_model.dart';
-import '/data/repositories/tarea_repository.dart';
+// lib/data/repositories/tarea_repository_impl.dart
+import '../../domain/entities/tarea.dart';
+import '../../data/repositories/tarea_repository.dart';
 import '../datasources/tarea_remote_datasource.dart';
 
 class TareaRepositoryImpl implements TareaRepository {
-  final TareaRemoteDataSource remote;
+  final TareaRemoteDataSource remoteDataSource;
 
-  TareaRepositoryImpl(this.remote);
+  TareaRepositoryImpl(this.remoteDataSource);
 
   @override
   Future<List<Tarea>> obtenerTodas() async {
-    final models = await remote.obtenerTodas();
-    return models.map((m) => m.toEntity()).toList();
+    return await remoteDataSource.obtenerTareas();
   }
 
   @override
-  Future<void> crearTarea(Tarea tarea) async {
-    await remote.crearTarea(TareaModel.fromEntity(tarea));
+  Future<void> crearTarea(Tarea tarea) {
+    return remoteDataSource.crearTarea(tarea);
   }
 
   @override
-  Future<void> actualizarEstado(String id, String nuevoEstado) async {
-    await remote.actualizarEstado(id, nuevoEstado);
+  Future<void> eliminarTarea(String id) {
+    return remoteDataSource.eliminarTarea(id);
   }
 
   @override
-  Future<void> eliminarTarea(String id) async {
-    await remote.eliminarTarea(id);
+  Future<void> actualizarEstado(String id, String nuevoEstado) {
+    return remoteDataSource.actualizarEstado(id, nuevoEstado);
+  }
+
+  @override
+  Future<List<String>> obtenerUsuarios() {
+    return remoteDataSource.obtenerUsuarios();
   }
 }

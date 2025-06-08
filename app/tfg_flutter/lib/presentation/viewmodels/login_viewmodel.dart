@@ -1,29 +1,33 @@
+// lib/presentation/viewmodels/login_viewmodel.dart
 import 'package:flutter/material.dart';
-import '/domain/entities/Usuario.dart';
-import '/domain/usecases/login_usuario.dart';
+import '/data/datasources/odoo_session.dart';
 
-class LoginViewModel with ChangeNotifier {
-  final LoginUsuarioUseCase loginUsuarioUseCase;
-
-  LoginViewModel({required this.loginUsuarioUseCase});
+class LoginViewModel extends ChangeNotifier {
+  final session = OdooSession();
 
   bool isLoading = false;
   String? error;
+  int? userId;
 
-  Future<Usuario?> login(String correo, String password) async {
+  Future<int?> login(String db, String username, String password) async {
     isLoading = true;
+    error = null;
     notifyListeners();
 
+    int? userId;
+
     try {
-      final usuario = await loginUsuarioUseCase(correo, password);
-      error = null;
-      return usuario;
+      final result = await session.login(db, username, password);
+      userId = result;
+      if (userId == null) {
+        error = "Credenciales inválidas";
+      }
     } catch (e) {
-      error = 'Correo o contraseña incorrectos';
-      return null;
+      error = e.toString();
     } finally {
       isLoading = false;
       notifyListeners();
     }
+    return userId;
   }
 }

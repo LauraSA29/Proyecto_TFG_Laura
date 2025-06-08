@@ -1,16 +1,34 @@
+// lib/presentation/viewmodels/home_viewmodel.dart
 import 'package:flutter/material.dart';
+import '/data/datasources/home_remote_datasource.dart';
+
 
 class HomeViewModel with ChangeNotifier {
   bool _isLoading = false;
+  int _totalTareas = 0;
+  int _totalReuniones = 0;
+  int _totalPedidos = 0;
 
   bool get isLoading => _isLoading;
+  int get totalTareas => _totalTareas;
+  int get totalReuniones => _totalReuniones;
+  int get totalPedidos => _totalPedidos;
+
+  final HomeRemoteDataSource remote;
+
+  HomeViewModel(this.remote);
 
   Future<void> cargarDatos() async {
     _isLoading = true;
     notifyListeners();
 
-    // TODO: Lógica para cargar datos de la pantalla principal
-    await Future.delayed(Duration(seconds: 1)); // Simulación
+    try {
+      _totalTareas = await remote.obtenerTotalTareas();
+      _totalReuniones = await remote.obtenerTotalReuniones();
+      _totalPedidos = await remote.obtenerTotalPedidos();
+    } catch (e) {
+      print("Error al cargar resumen: $e");
+    }
 
     _isLoading = false;
     notifyListeners();

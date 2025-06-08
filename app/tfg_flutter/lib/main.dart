@@ -1,74 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 import 'presentation/routes/routes.dart';
-import 'presentation/viewmodels/tarea_viewmodel.dart';
-import 'presentation/viewmodels/login_viewmodel.dart';
-import 'presentation/viewmodels/usuario_viewmodel.dart';
+
+import 'data/datasources/tarea_remote_datasource.dart';
+import 'data/datasources/usuario_remote_datasource.dart';
+import 'data/datasources/home_remote_datasource.dart';
+
 import 'data/repositories/tarea_repository_impl.dart';
-import 'data/datasources/tarea_remote_datasource_impl.dart';
+import 'data/repositories/usuario_repository_impl.dart';
+
 import 'domain/usecases/actualizar_estado_tarea.dart';
 import 'domain/usecases/crear_tarea.dart';
 import 'domain/usecases/eliminar_tarea.dart';
 import 'domain/usecases/obtener_tareas.dart';
-import 'domain/usecases/login_usuario.dart';
-import '/data/repositories/usuario_repository_impl.dart';
+import 'domain/usecases/obtener_usuario.dart';
+
+import 'presentation/viewmodels/tarea_viewmodel.dart';
+import 'presentation/viewmodels/usuario_viewmodel.dart';
+import 'presentation/viewmodels/login_viewmodel.dart';
+import 'presentation/viewmodels/home_viewmodel.dart';
+import 'presentation/viewmodels/chat_viewmodel.dart';
 
 void main() {
-  final tareaRemote = TareaRemoteDataSourceImpl();
-  final tareaRepository = TareaRepositoryImpl(tareaRemote);
-  final usuarioRepository = UsuarioRepositoryImpl();
+  WidgetsFlutterBinding.ensureInitialized(); 
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => UsuarioViewModel()..cargarSesionGuardada(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => TareaViewModel(
-            obtenerTareasUseCase: ObtenerTareasUseCase(tareaRepository),
-            crearTareaUseCase: CrearTareaUseCase(tareaRepository),
-            actualizarEstadoUseCase: ActualizarEstadoTareaUseCase(tareaRepository),
-            eliminarTareaUseCase: EliminarTareaUseCase(tareaRepository),
-          ),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LoginViewModel(
-            loginUsuarioUseCase: LoginUsuarioUseCase(usuarioRepository),
-          ),
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  initializeDateFormatting('es', null); 
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tasknelia',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    // DataSources
+    final tareaRemote = TareaRemoteDataSource();
+    final usuarioRemote = UsuarioRemoteDataSource();
+    final homeRemote = HomeRemoteDataSource();
+
+    // Repositories
+    final tareaRepo = TareaRepositoryImpl(tareaRemote);
+    final usuarioRepo = UsuarioRepositoryImpl(usuarioRemote);
+
+    // UseCases
+    final obtenerTareasUC = ObtenerTareasUseCase(tareaRepo);
+    final crearTareaUC = CrearTareaUseCase(tareaRepo);
+    final actualizarEstadoUC = ActualizarEstadoTareaUseCase(tareaRepo);
+    final eliminarTareaUC = EliminarTareaUseCase(tareaRepo);
+    final obtenerUsuarioUC = ObtenerUsuarioUseCase(usuarioRepo);
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => UsuarioViewModel(obtenerUsuarioUC)),
+        ChangeNotifierProvider(create: (_) => TareaViewModel(
+          obtenerTareasUseCase: obtenerTareasUC,
+          crearTareaUseCase: crearTareaUC,
+          actualizarEstadoUseCase: actualizarEstadoUC,
+          eliminarTareaUseCase: eliminarTareaUC,
+        )),
+        ChangeNotifierProvider(create: (_) => HomeViewModel(homeRemote)),
+        ChangeNotifierProvider(create: (_) => ChatViewModel()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Tasknelia',
+        initialRoute: AppRoutes.login,
+        routes: AppRoutes.getRoutes(),
       ),
-      initialRoute: AppRoutes.login,
-      routes: AppRoutes.getRoutes(),
-      // 👇 Soporte para localización
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('es'), // Español
-        Locale('en'), // Inglés (si lo quieres como respaldo)
-      ],
-      locale: const Locale('es'), // <- Idioma predeterminado: español
     );
   }
 }

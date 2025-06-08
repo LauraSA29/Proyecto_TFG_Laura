@@ -1,3 +1,4 @@
+// lib/presentation/routes/routes.dart
 import 'package:flutter/material.dart';
 import '../views_screens/login_screen.dart';
 import '../views_screens/home_screen.dart';
@@ -5,6 +6,7 @@ import '../views_screens/agenda_screen.dart';
 import '../views_screens/chat_screen.dart';
 import '../views_screens/crear_tarea_screen.dart';
 
+//rutas para no tener que estar repitiendolas
 class AppRoutes {
   static const String login = '/login';
   static const String home = '/home';

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/usuario_viewmodel.dart';
+import '/presentation/widget/header_widget.dart';  // Importa el widget reutilizable
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final usuarioVM = Provider.of<UsuarioViewModel>(context);
     final usuario = usuarioVM.usuario;
-    final isAdmin = usuario?.tipo.toLowerCase() == 'admin';
+    final isAdmin = usuarioVM.esAdmin;
+
+    final fotoUrl = usuario?.fotoUrl;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -27,7 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _buildHeader(usuario?.nombre ?? "Usuario", usuarioVM),
+              HeaderWidget(
+                nombre: usuario?.nombre ?? "Usuario",
+                fotoUrl: fotoUrl,
+                usuarioVM: usuarioVM,
+              ),
               const SizedBox(height: 10),
 
               if (isAdmin) ...[
@@ -46,110 +53,54 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader(String nombre, UsuarioViewModel usuarioVM) {
-    return Stack(
-      children: [
-        ClipPath(
-          clipper: HeaderClipper(),
-          child: Container(
-            height: 110,
-            color: AppColors.azulPrincipal,
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: const Alignment(0, -0.3), // <- ¡Esto sube el contenido!
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const CircleAvatar(
-                          radius: 22,
-                          backgroundImage: AssetImage('assets/profile.jpg'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Hola, $nombre",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: AppColors.textoOscuro,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.chat_rounded),
-                        color: AppColors.textoOscuro,
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/chat');
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.logout),
-                        color: AppColors.textoOscuro,
-                        onPressed: () async {
-                          await usuarioVM.cerrarSesion();
-                          if (context.mounted) {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBoton(String texto, String? ruta) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      child: ElevatedButton(
-        onPressed: ruta != null ? () => Navigator.pushNamed(context, ruta) : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.fondoCampos,
-          foregroundColor: AppColors.textoOscuro,
-          minimumSize: const Size(double.infinity, 50),
-        ),
-        child: Text(
-          texto,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 38),
+    child: ElevatedButton(
+      onPressed: ruta != null ? () => Navigator.pushNamed(context, ruta) : null,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.fondoCampos,
+        foregroundColor: AppColors.textoOscuro,
+        minimumSize: const Size(double.infinity, 50),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1.2,
           ),
         ),
       ),
-    );
-  }
+      child: Text(
+        texto,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  );
+}
+
 
   Widget _buildCalendario() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 35),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
             color: AppColors.fondoCampos,
             width: 2,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: TableCalendar(
           locale: 'es_ES',
@@ -169,32 +120,33 @@ class _HomeScreenState extends State<HomeScreen> {
               shape: BoxShape.circle,
             ),
             selectedDecoration: BoxDecoration(
-              color: AppColors.textoOscuro.withOpacity(0.8),
+              color: AppColors.textoOscuro.withOpacity(0.9),
               shape: BoxShape.circle,
+            ),
+            defaultTextStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
           headerStyle: const HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
+            titleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textoOscuro,
+            ),
+            leftChevronIcon: Icon(Icons.chevron_left, color: AppColors.azulPrincipal),
+            rightChevronIcon: Icon(Icons.chevron_right, color: AppColors.azulPrincipal),
+          ),
+          daysOfWeekStyle: const DaysOfWeekStyle(
+            weekdayStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textoOscuro,
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-class HeaderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 30);
-    path.quadraticBezierTo(
-        size.width / 2, size.height, size.width, size.height - 30);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

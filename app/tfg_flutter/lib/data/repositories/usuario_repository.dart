@@ -1,5 +1,6 @@
-import '/domain/entities/Usuario.dart';
+// lib/data/repositories/usuario_repository.dart
+import '../../domain/entities/usuario.dart';
 
 abstract class UsuarioRepository {
-  Future<Usuario?> login(String correo, String password);
+  Future<Usuario?> getUsuario(int userId);
 }

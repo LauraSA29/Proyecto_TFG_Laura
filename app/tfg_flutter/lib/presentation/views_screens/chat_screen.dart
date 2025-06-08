@@ -1,12 +1,16 @@
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '/theme/colores.dart';
+import '/presentation/viewmodels/usuario_viewmodel.dart';
+import '/presentation/widget/header_widget.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
   final List<Map<String, String>> messages = const [
     {
-      "name": "Claudia Alves",
+      "name": "Claudia",
       "message": "Recuerda que la reunión es mañana a las 9:30",
       "time": "hace 3m",
       "image": "assets/images/user1.jpg"
@@ -24,13 +28,13 @@ class ChatScreen extends StatelessWidget {
       "image": "assets/images/user1.jpg"
     },
     {
-      "name": "Dani Martínez",
+      "name": "Dani",
       "message": "¿Te parece bien este diseño?",
       "time": "hace 3h",
       "image": "assets/images/user2.jpg"
     },
     {
-      "name": "Kimberly Nguyen",
+      "name": "Karen",
       "message": "Voy a llegar un poco tarde hoy.",
       "time": "hace 5h",
       "image": "assets/images/user3.jpg"
@@ -42,9 +46,15 @@ class ChatScreen extends StatelessWidget {
       "image": "assets/images/user3.jpg"
     },
     {
-      "name": "Mariana Napolitani",
+      "name": "Mariana",
       "message": "Tengo que recoger el paquete.",
       "time": "Ayer",
+      "image": "assets/images/user4.jpg"
+    },
+    {
+      "name": "Adrián",
+      "message": "Hay un problema con la impresora.",
+      "time": "hace 2d",
       "image": "assets/images/user4.jpg"
     },
     {
@@ -57,59 +67,20 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usuarioVM = Provider.of<UsuarioViewModel>(context);
+    final usuario = usuarioVM.usuario;
+
     return Scaffold(
-      backgroundColor: AppColors.fondoClaro,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Encabezado curvo con estilo Tasknelia
-          Stack(
-            children: [
-              ClipPath(
-                clipper: HeaderClipper(),
-                child: Container(
-                  height: 110,
-                  color: AppColors.azulPrincipal,
-                ),
-              ),
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const CircleAvatar(
-                          radius: 22,
-                          backgroundImage: AssetImage("assets/profile.jpg"),
-                        ),
-                        const Text(
-                          "¡Bienvenido!",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: AppColors.textoOscuro,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.home_outlined),
-                          color: AppColors.textoOscuro,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+
+          HeaderWidget(
+            nombre: usuario?.nombre ?? "Usuario",
+            fotoUrl: usuario?.fotoUrl,
+            usuarioVM: usuarioVM,
           ),
-
           const SizedBox(height: 10),
-
-          // Lista de mensajes
           Expanded(
             child: ListView.separated(
               itemCount: messages.length,
@@ -117,12 +88,21 @@ class ChatScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final message = messages[index];
                 return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage(message["image"]!),
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white, width: 2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage(message["image"]!),
+                    ),
                   ),
                   title: Text(
                     message["name"]!,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textoOscuro,
+                    ),
                   ),
                   subtitle: Text(message["message"]!),
                   trailing: Column(
@@ -144,25 +124,4 @@ class ChatScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-// Clipper para encabezado curvo
-class HeaderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 30);
-    path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
-      size.width,
-      size.height - 30,
-    );
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

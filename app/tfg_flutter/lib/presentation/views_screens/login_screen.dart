@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/login_viewmodel.dart';
 import '/presentation/viewmodels/usuario_viewmodel.dart';
-import '/domain/entities/Usuario.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _correoController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _db = "odoo";
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Circulitos en la parte blanca
             Positioned(top: 470, left: 20, child: _buildCircle(18, opacity: 0.2)),
             Positioned(top: 520, right: 25, child: _buildCircle(12, opacity: 0.2)),
             Positioned(bottom: 40, left: 30, child: _buildCircle(20, opacity: 0.1)),
@@ -35,27 +34,24 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   _buildHeader(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 5),
                   _buildTextField('Correo', Icons.email, _correoController, false),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 25),
                   _buildTextField('Contraseña', Icons.vpn_key, _passwordController, true),
+                  const SizedBox(height: 35),
 
-                  // Texto "¿Olvidaste tu contraseña?" centrado y clicable
-                  Padding(
-                    padding: const EdgeInsets.only(top: 26),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/recuperar'); // o la ruta correspondiente
-                      },
-                      child: const Center(
-                        child: Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black87,
-                          ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/recuperar');
+                    },
+                    child: const Center(
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
@@ -80,37 +76,44 @@ class _LoginScreenState extends State<LoginScreen> {
                               return;
                             }
 
-                            if (correo == "admin@tfg.com" && password == "admin123") {
-                              final usuario = Usuario(
-                                id: "1",
-                                nombre: "Administrador",
-                                correo: correo,
-                                tipo: "admin",
-                              );
-                              await usuarioVM.iniciarSesion(usuario);
-                              Navigator.pushReplacementNamed(context, '/home');
-                            } else if (correo == "user@tfg.com" && password == "user123") {
-                              final usuario = Usuario(
-                                id: "2",
-                                nombre: "Usuario Normal",
-                                correo: correo,
-                                tipo: "normal",
-                              );
-                              await usuarioVM.iniciarSesion(usuario);
+                            final userId = await loginVM.login(_db, correo, password);
+
+                            if (userId != null) {
+                              await usuarioVM.cargarUsuarioDesdeOdoo(userId);
                               Navigator.pushReplacementNamed(context, '/home');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Datos incorrectos")),
+                                const SnackBar(content: Text("Credenciales inválidas")),
                               );
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.azulPrincipal,
                             shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(28), // más grande
+                            padding: const EdgeInsets.all(28),
+                            side: const BorderSide(color: Color.fromARGB(255, 207, 206, 206), width: 2),
                           ),
                           child: const Icon(Icons.double_arrow, size: 40, color: Colors.white),
                         ),
+
+                  const SizedBox(height: 100),
+
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/registro');
+                    },
+                    child: const Center(
+                      child: Text(
+                        '¿No tienes una cuenta? Crea una',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(height: 30),
                 ],
@@ -135,8 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
             color: AppColors.azulPrincipal,
           ),
         ),
-
-        // Circulitos decorativos
         Positioned(
           top: size.height * 0.10 - 20,
           left: size.width / 2 - 90,
@@ -152,8 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
           right: size.width / 2 - 100,
           child: _buildCircle(20),
         ),
-
-        // Avatar con borde
         Positioned(
           top: size.height * 0.10,
           left: size.width / 2 - 60,
@@ -169,8 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-
-        // Texto "¡Bienvenido!"
         Positioned(
           top: size.height * 0.27,
           left: 0,
@@ -196,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscure,
-        style: const TextStyle(fontFamily: 'Roboto'), // Asegura fuente uniforme
+        style: const TextStyle(fontFamily: 'Roboto'),
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon),
