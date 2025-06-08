@@ -1,31 +1,30 @@
 ```plantuml
 @startuml
-
 node "Tasknelia\nAplicación Flutter\n<<device>>" as flutter
 
-node "Servidor Docker Host" as docker {
+node "Docker" as docker {
 
-  node "NGINX\n<<container>>\n(Puertos 80, 443)" as nginx {
-    [Proxy inverso\nHTTPS → HTTP interno]
+  node "NGINX\n<<container>>\n(Puerto 8080)" as nginx {
+    [Proxy inverso\nHTTP → contenedor Odoo]
   }
 
   node "Odoo\n<<container>>\n(Puerto 8069)" as odoo {
-    [Servidor ERP]
+    [Servidor ERP con API JSON-RPC]
   }
 
   database "PostgreSQL\n<<database>>\n(Puerto 5432)" as postgres
 }
 
-flutter --> nginx : HTTPS :443
-nginx --> odoo : HTTP :8069
-odoo --> postgres : TCP :5432
+flutter -- nginx : HTTP:8080 / JSON-RPC
+nginx -- odoo : HTTP:8069 / JSON-RPC
+odoo -- postgres : TCP:5432
 
 note right of odoo
 Módulos activados:
 - Contactos
-- Productos
-- Pedidos
-- Proyectos / Tareas
+- Inventario
+- Ventas
+- Proyectos
 - Calendario
 end note
 @enduml

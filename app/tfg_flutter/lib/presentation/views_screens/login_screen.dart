@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.azulPrincipal,
+                            backgroundColor: Colores.azulPrincipal,
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(28),
                             side: const BorderSide(color: Color.fromARGB(255, 207, 206, 206), width: 2),
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Container(
             height: size.height * 0.40,
             width: double.infinity,
-            color: AppColors.azulPrincipal,
+            color: Colores.azulPrincipal,
           ),
         ),
         Positioned(
@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textoOscuro,
+                color: Colores.textoOscuro,
               ),
             ),
           ),
@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
           hintText: hint,
           prefixIcon: Icon(icon),
           filled: true,
-          fillColor: AppColors.fondoCampos,
+          fillColor: Colores.fondoCampos,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),

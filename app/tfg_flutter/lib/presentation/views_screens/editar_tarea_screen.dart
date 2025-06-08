@@ -125,10 +125,10 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.fondoClaro,
+      backgroundColor: Colores.fondoClaro,
       appBar: AppBar(
         title: const Text("Editar Tarea"),
-        backgroundColor: AppColors.azulPrincipal,
+        backgroundColor: Colores.azulPrincipal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -168,7 +168,7 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
                 ElevatedButton(
                   onPressed: _seleccionarFecha,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.azulPrincipal,
+                    backgroundColor: Colores.azulPrincipal,
                   ),
                   child: const Text("Cambiar Fecha"),
                 ),
@@ -182,7 +182,7 @@ class _EditarTareaScreenState extends State<EditarTareaScreen> {
                     icon: const Icon(Icons.check),
                     label: const Text("Guardar Cambios"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.azulPrincipal,
+                      backgroundColor: Colores.azulPrincipal,
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     ),
                     onPressed: _editarTarea,

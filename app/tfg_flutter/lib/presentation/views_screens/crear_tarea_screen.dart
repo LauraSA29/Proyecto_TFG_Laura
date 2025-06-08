@@ -190,7 +190,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                         : ElevatedButton(
                             onPressed: _crearTarea,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.azulPrincipal,
+                              backgroundColor: Colores.azulPrincipal,
                               padding: const EdgeInsets.symmetric(vertical: 18),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -243,7 +243,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
         IconButton(
           onPressed: _seleccionarFecha,
           icon: const Icon(Icons.calendar_today),
-          color: AppColors.azulPrincipal,
+          color: Colores.azulPrincipal,
         ),
       ],
     );
@@ -253,7 +253,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: AppColors.fondoCampos,
+      fillColor: Colores.fondoCampos,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),

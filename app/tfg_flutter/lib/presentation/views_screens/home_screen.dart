@@ -59,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
     child: ElevatedButton(
       onPressed: ruta != null ? () => Navigator.pushNamed(context, ruta) : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.fondoCampos,
-        foregroundColor: AppColors.textoOscuro,
+        backgroundColor: Colores.fondoCampos,
+        foregroundColor: Colores.textoOscuro,
         minimumSize: const Size(double.infinity, 50),
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: AppColors.fondoCampos,
+            color: Colores.fondoCampos,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16),
@@ -116,11 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           calendarStyle: CalendarStyle(
             todayDecoration: const BoxDecoration(
-              color: AppColors.azulPrincipal,
+              color: Colores.azulPrincipal,
               shape: BoxShape.circle,
             ),
             selectedDecoration: BoxDecoration(
-              color: AppColors.textoOscuro.withOpacity(0.9),
+              color: Colores.textoOscuro.withOpacity(0.9),
               shape: BoxShape.circle,
             ),
             defaultTextStyle: const TextStyle(
@@ -134,15 +134,15 @@ class _HomeScreenState extends State<HomeScreen> {
             titleTextStyle: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textoOscuro,
+              color: Colores.textoOscuro,
             ),
-            leftChevronIcon: Icon(Icons.chevron_left, color: AppColors.azulPrincipal),
-            rightChevronIcon: Icon(Icons.chevron_right, color: AppColors.azulPrincipal),
+            leftChevronIcon: Icon(Icons.chevron_left, color: Colores.azulPrincipal),
+            rightChevronIcon: Icon(Icons.chevron_right, color: Colores.azulPrincipal),
           ),
           daysOfWeekStyle: const DaysOfWeekStyle(
             weekdayStyle: TextStyle(
               fontWeight: FontWeight.w600,
-              color: AppColors.textoOscuro,
+              color: Colores.textoOscuro,
             ),
           ),
         ),

@@ -3,8 +3,9 @@
 left to right direction
 skinparam packageStyle rectangle
 
+'los dos usuarios'
 actor Admin as "Administrador"
-actor Worker as "Trabajador"
+actor Trabajador as "Trabajador"
 
 rectangle {
 
@@ -12,13 +13,15 @@ rectangle {
   usecase "Modificar tarea, reunión o pedido"
   usecase "Eliminar tarea, reunión o pedido"
   usecase "Consultar tareas, reuniones o pedidos asignados"
+
 }
 
-Admin --> "Crear tarea, reunión o pedido"
-Admin --> "Modificar tarea, reunión o pedido"
-Admin --> "Eliminar tarea, reunión o pedido"
-Admin --> "Consultar tareas, reuniones o pedidos asignados"
+'sin las flechitas'
+Admin -- "Crear tarea, reunión o pedido"
+Admin -- "Modificar tarea, reunión o pedido"
+Admin -- "Eliminar tarea, reunión o pedido"
+Admin -- "Consultar tareas, reuniones o pedidos asignados"
 
-Worker --> "Consultar tareas, reuniones o pedidos asignados"
+Trabajador -- "Consultar tareas, reuniones o pedidos asignados"
 
 @enduml

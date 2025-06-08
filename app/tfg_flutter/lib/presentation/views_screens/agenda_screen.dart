@@ -48,7 +48,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textoOscuro,
+                    color: Colores.textoOscuro,
                   ),
                 ),
               ),
@@ -106,7 +106,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   static const _seccionStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.bold,
-    color: AppColors.textoOscuro,
+    color: Colores.textoOscuro,
   );
 
   Widget _buildTareaCard(Tarea tarea) {
@@ -142,7 +142,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: AppColors.textoOscuro,
+                      color: Colores.textoOscuro,
                     ),
                   ),
                   const SizedBox(height: 4),

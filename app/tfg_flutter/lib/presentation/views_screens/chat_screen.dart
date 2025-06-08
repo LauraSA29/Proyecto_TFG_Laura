@@ -101,7 +101,7 @@ class ChatScreen extends StatelessWidget {
                     message["name"]!,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textoOscuro,
+                      color: Colores.textoOscuro,
                     ),
                   ),
                   subtitle: Text(message["message"]!),

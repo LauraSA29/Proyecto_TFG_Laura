@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/usuario_viewmodel.dart';
 
+//encabezado para poner en las screens
 class HeaderWidget extends StatelessWidget {
   final String nombre;
   final String? fotoUrl;
@@ -25,7 +26,7 @@ class HeaderWidget extends StatelessWidget {
           child: Container(
             height: 110,
             decoration: BoxDecoration(
-              color: AppColors.azulPrincipal,
+              color: Colores.azulPrincipal,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
@@ -71,7 +72,7 @@ class HeaderWidget extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textoOscuro,
+                          color: Colores.textoOscuro,
                         ),
                       ),
                     ],
@@ -80,14 +81,14 @@ class HeaderWidget extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.chat_rounded),
-                        color: AppColors.textoOscuro,
+                        color: Colores.textoOscuro,
                         onPressed: () {
                           Navigator.pushNamed(context, '/chat');
                         },
                       ),
                       IconButton(
                         icon: const Icon(Icons.logout),
-                        color: AppColors.textoOscuro,
+                        color: Colores.textoOscuro,
                         onPressed: () async {
                           await usuarioVM.cerrarSesion();
                           if (context.mounted) {
