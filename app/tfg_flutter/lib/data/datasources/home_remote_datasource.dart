@@ -1,8 +1,9 @@
-// lib/data/datasource/home_remote_datasource.dart
+//lib/data/datasource/home_remote_datasource.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'odoo_session.dart';
 
+// Clase para los datos remotos para la pantalla de inicio conectándose al backend de Odoo con elJSON-RPC
 class HomeRemoteDataSource {
   final session = OdooSession();
 
@@ -25,7 +26,7 @@ class HomeRemoteDataSource {
           session.password,
           model,
           "search_count",
-          [[]] // sin filtros
+          [[]] // sin filtros para tener todos los registros o petaba
         ]
       },
       "id": 1

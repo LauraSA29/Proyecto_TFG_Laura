@@ -7,6 +7,7 @@ import '/presentation/viewmodels/usuario_viewmodel.dart';
 import '/presentation/widget/header_widget.dart';
 import '/theme/colores.dart';
 
+//este estilo era diferente, colores papelera, lapiz icono, check para marcar (los tenia puestos en el manual de usuario)
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
 
@@ -121,7 +122,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
         child: Row(
           children: [
-            // Estado (color)
+            //estado
             Container(
               width: 10,
               height: 10,
@@ -132,7 +133,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               ),
             ),
 
-            // Título y estado
+            //yítulo y estado
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +159,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               ),
             ),
 
-            // Fecha
+            // fecha
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: Text(
@@ -167,7 +168,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               ),
             ),
 
-            // Botones
+            // botones
             Row(
               children: [
                 IconButton(

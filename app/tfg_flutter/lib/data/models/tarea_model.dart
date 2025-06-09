@@ -1,5 +1,6 @@
 import '/domain/entities/tarea.dart';
 
+/// datos tarea para la conversión entre JSON y dominio
 class TareaModel {
   final String id;
   final String titulo;
@@ -7,7 +8,7 @@ class TareaModel {
   final String estado;
   final String fecha;
   final int proyectoId;
-  final List<int> userIds;
+  final List<int> userIds; //
   final String? asignado;
 
   TareaModel({
@@ -21,6 +22,7 @@ class TareaModel {
     this.asignado,
   });
 
+  // instancia a partir de un mapa JSON
   factory TareaModel.fromJson(Map<String, dynamic> json) {
     return TareaModel(
       id: json['id'].toString(),
@@ -39,7 +41,7 @@ class TareaModel {
       'id': id,
       'titulo': titulo,
       'descripcion': descripcion,
-      'estado': estado,
+      'estado': estado, // modelo a un mapa.
       'fecha_limite': fecha,
       'proyecto_id': proyectoId,
       'user_ids': userIds,
@@ -47,6 +49,7 @@ class TareaModel {
     };
   }
 
+// modelo a dominio 
   Tarea toEntity() => Tarea(
         id: id,
         titulo: titulo,
@@ -64,7 +67,7 @@ class TareaModel {
       titulo: tarea.titulo,
       descripcion: tarea.descripcion,
       estado: tarea.estado,
-      fecha: tarea.fecha.toIso8601String(),
+      fecha: tarea.fecha.toIso8601String(), // instancia a partir de dominio
       proyectoId: tarea.proyectoId,
       userIds: tarea.userIds,
       asignado: tarea.asignado,

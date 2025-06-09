@@ -3,6 +3,7 @@ import '../../domain/entities/usuario.dart';
 import '../../data/repositories/usuario_repository.dart';
 import '../datasources/usuario_remote_datasource.dart';
 
+// implementación usuario
 class UsuarioRepositoryImpl implements UsuarioRepository {
   final UsuarioRemoteDataSource remoteDataSource;
 

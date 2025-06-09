@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/theme/colores.dart';
 import '/presentation/viewmodels/usuario_viewmodel.dart';
 
-//encabezado para poner en las screens
+//encabezado para poner en las screens, debido al error de git, esta la versión de salir hacia login
 class HeaderWidget extends StatelessWidget {
   final String nombre;
   final String? fotoUrl;
@@ -20,7 +20,6 @@ class HeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo con sombra
         ClipPath(
           clipper: HeaderClipper(),
           child: Container(

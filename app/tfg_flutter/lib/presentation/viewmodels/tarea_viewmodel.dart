@@ -7,6 +7,7 @@ import '/domain/usecases/actualizar_estado_tarea.dart';
 import '/domain/usecases/eliminar_tarea.dart';
 
 class TareaViewModel with ChangeNotifier {
+
   final ObtenerTareasUseCase obtenerTareasUseCase;
   final CrearTareaUseCase crearTareaUseCase;
   final ActualizarEstadoTareaUseCase actualizarEstadoUseCase;
@@ -28,25 +29,30 @@ class TareaViewModel with ChangeNotifier {
   String? get error => _error;
 
   Future<void> cargarTareas() async {
-    print('Cargando tareas...');
+    print('cargando tareitas...'); //ver si se cargan
     _isLoading = true;
     notifyListeners();
 
     try {
+
       _tareas = await obtenerTareasUseCase();
-      print("Tareas cargadas: ${_tareas.length}");
+      print("tareas cargadas: ${_tareas.length}");
       _error = null;
+
     } catch (e, stacktrace) {
+
       print('Error en cargarTareas(): $e');
       print(stacktrace);
       _error = 'Error al cargar tareas: $e';
       _tareas = [];
+
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
+//
 
   Future<void> crearTarea(Tarea tarea) async {
     await crearTareaUseCase(tarea);
@@ -64,7 +70,6 @@ class TareaViewModel with ChangeNotifier {
   }
 
   Future<void> actualizarTarea(Tarea tarea) async {
-
   await eliminarTarea(tarea.id);
   await crearTarea(tarea);
   }

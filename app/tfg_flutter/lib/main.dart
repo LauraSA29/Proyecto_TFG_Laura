@@ -34,16 +34,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // DataSources
+
+    //dataSources
     final tareaRemote = TareaRemoteDataSource();
     final usuarioRemote = UsuarioRemoteDataSource();
     final homeRemote = HomeRemoteDataSource();
 
-    // Repositories
+    // repositories
     final tareaRepo = TareaRepositoryImpl(tareaRemote);
     final usuarioRepo = UsuarioRepositoryImpl(usuarioRemote);
 
-    // UseCases
+    //useCases
     final obtenerTareasUC = ObtenerTareasUseCase(tareaRepo);
     final crearTareaUC = CrearTareaUseCase(tareaRepo);
     final actualizarEstadoUC = ActualizarEstadoTareaUseCase(tareaRepo);
@@ -60,12 +61,13 @@ class MyApp extends StatelessWidget {
           actualizarEstadoUseCase: actualizarEstadoUC,
           eliminarTareaUseCase: eliminarTareaUC,
         )),
+
         ChangeNotifierProvider(create: (_) => HomeViewModel(homeRemote)),
         ChangeNotifierProvider(create: (_) => ChatViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Tasknelia',
+        title: 'Tasknelia', //nombre app, haacer logo?
         initialRoute: AppRoutes.login,
         routes: AppRoutes.getRoutes(),
       ),

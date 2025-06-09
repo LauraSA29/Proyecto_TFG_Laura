@@ -1,8 +1,10 @@
+//lib/data/datasources/tarea_remote_datasource.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../domain/entities/tarea.dart';
+import '/domain/entities/tarea.dart';
 import 'odoo_session.dart';
 
+// interactúa con Odoo para gestionar tareas con protocolo JSON-RPC para comunicarse con el backend Odoo
 class TareaRemoteDataSource {
   final session = OdooSession();
 
@@ -10,6 +12,7 @@ class TareaRemoteDataSource {
   final String username = 'admin';
   final String password = 'admin';
 
+// obtiene las tareas desde odoo
   Future<List<Tarea>> obtenerTareas() async {
   await session.login(db, username, password);
 
@@ -52,11 +55,11 @@ class TareaRemoteDataSource {
   final result = decoded['result'];
 
   if (result == null || result == false || result is! List) {
-    print('Respuesta inesperada al obtener tareas: $result');
+    print('Error al obtener tareas: $result'); //pruebas 
     throw Exception('Error al obtener tareas de Odoo.');
   }
 
-  final data = result as List;
+  final data = result;
 
   return data.map((json) {
     String descripcion = '';
@@ -74,10 +77,10 @@ class TareaRemoteDataSource {
       if (json['date_deadline'] is String && (json['date_deadline'] as String).isNotEmpty) {
         fecha = DateTime.parse(json['date_deadline']);
       } else {
-        fecha = DateTime.now();
+        fecha = DateTime.now(); //es fecha final, pero la usamos de fecha normal (en versiones futuras se cambiará)
       }
     } catch (e) {
-      print('Error al parsear date_deadline: $e');
+      print('Error en fecha: $e');
       fecha = DateTime.now();
     }
 
@@ -115,7 +118,7 @@ class TareaRemoteDataSource {
 }
 
 
-
+  // crea una tarea en Odoo
   Future<void> crearTarea(Tarea tarea) async {
     await session.login(db, username, password);
 
@@ -156,10 +159,11 @@ class TareaRemoteDataSource {
       if (userResult != null && userResult.isNotEmpty) {
         userId = userResult[0]['id'];
       } else {
-        print("Usuario no encontrado: ${tarea.asignado}");
+        print("usuario no encontrado: ${tarea.asignado}");
       }
     }
 
+// crea la tarea en Odoo
     final createArgs = {
       "name": tarea.titulo,
       "description": tarea.descripcion,
@@ -197,14 +201,15 @@ class TareaRemoteDataSource {
     final data = jsonDecode(response.body);
 
     if (data['error'] != null) {
-      print('Error al crear tarea en Odoo: ${data['error']}');
-      throw Exception('Error desde Odoo al crear tarea');
+      print('error al crear tarea en Odoo: ${data['error']}'); //ver los errores prueba
+      throw Exception('Error desde Odoo al crear tarea'); 
     }
 
     final newId = data['result'];
-    print('Tarea creada con ID: $newId');
+    print('tarea creada: $newId'); //prueba para ver si se crean y su ID
   }
 
+// elimina una tarea en Odoo
   Future<void> eliminarTarea(String id) async {
     await session.login(db, username, password);
 
@@ -233,6 +238,7 @@ class TareaRemoteDataSource {
     );
   }
 
+// para cambiar a completado o al revés
   Future<void> actualizarEstado(String id, String nuevoEstado) async {
     await session.login(db, username, password);
 
@@ -296,6 +302,7 @@ class TareaRemoteDataSource {
     );
   }
 
+// obtener usuario para lista
   Future<List<String>> obtenerUsuarios() async {
     await session.login(db, username, password);
 

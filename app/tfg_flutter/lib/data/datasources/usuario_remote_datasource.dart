@@ -1,7 +1,7 @@
 // lib/data/datasource/usuario_remote_datasource.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../domain/entities/usuario.dart';
+import '/domain/entities/usuario.dart';
 import 'odoo_session.dart';
 
 class UsuarioRemoteDataSource {
@@ -11,6 +11,7 @@ class UsuarioRemoteDataSource {
   final String username = 'admin';
   final String password = 'admin';
 
+// datos usuario por id
   Future<Usuario?> obtenerUsuario(int userId) async {
     await session.login(db, username, password);
 
@@ -53,7 +54,7 @@ class UsuarioRemoteDataSource {
       nombre: json['name'] ?? '',
       correo: json['email'] ?? '',
       tipo: tipo,
-      fotoUrl: json['image_1920'],
+      fotoUrl: json['image_1920'], //fpto
     );
   }
 }

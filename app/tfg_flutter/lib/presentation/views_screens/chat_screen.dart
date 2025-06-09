@@ -8,60 +8,61 @@ import '/presentation/widget/header_widget.dart';
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
+//ESto es para simular los mensajes jaja
   final List<Map<String, String>> messages = const [
     {
-      "name": "Claudia",
-      "message": "Recuerda que la reunión es mañana a las 9:30",
-      "time": "hace 3m",
-      "image": "assets/images/user1.jpg"
+      "nombre": "Claudia",
+      "msg": "Recuerda que la reunión es mañana a las 9:30",
+      "hora": "hace 3m",
+      "img": "assets/img/claudia.png", //revisar por qué no funcioan las fotos
     },
     {
-      "name": "Alba",
-      "message": "¿Puedes mirar el documento de ayer?",
-      "time": "hace 5m",
-      "image": "assets/images/user1.jpg"
+      "nombre": "Alba",
+      "msg": "¿Puedes mirar el documento de ayer? :)",
+      "hora": "hace 5m",
+      "img": "assets/img/alba.png",
     },
     {
-      "name": "Alberto",
-      "message": "Hay que arreglar el servidor antes del viernes.",
-      "time": "hace 2h",
-      "image": "assets/images/user1.jpg"
+      "nombre": "Alberto",
+      "msg": "Hay que arreglar el servidor antes del viernes.",
+      "hora": "hace 2h",
+      "img": "assets/img/alberto.png",
     },
     {
-      "name": "Dani",
-      "message": "¿Te parece bien este diseño?",
-      "time": "hace 3h",
-      "image": "assets/images/user2.jpg"
+      "nombre": "Dani",
+      "msg": "¿Te parece bien este diseño? 😊", //emojiii
+      "hora": "hace 3h",
+      "img": "assets/img/dani.png",
     },
     {
-      "name": "Karen",
-      "message": "Voy a llegar un poco tarde hoy.",
-      "time": "hace 5h",
-      "image": "assets/images/user3.jpg"
+      "nombre": "Karen",
+      "msg": "Voy a llegar un poco tarde hoy :(",
+      "hora": "hace 5h",
+      "img": "assets/img/karen.png",
     },
     {
-      "name": "Daniel",
-      "message": "Estoy de reunión, luego te escribo.",
-      "time": "hace 7h",
-      "image": "assets/images/user3.jpg"
+      "nombre": "Daniel",
+      "msg": "Estoy de reunión, luego te escribo.",
+      "hora": "hace 7h",
+      "img": "assets/img/daniel.png",
     },
     {
-      "name": "Mariana",
-      "message": "Tengo que recoger el paquete.",
-      "time": "Ayer",
-      "image": "assets/images/user4.jpg"
+      "nombre": "Mariana",
+      "msg": "Tengo que recoger el paquete.",
+      "hora": "Ayer",
+      "img": "assets/img/mariana.png",
     },
     {
-      "name": "Adrián",
-      "message": "Hay un problema con la impresora.",
-      "time": "hace 2d",
-      "image": "assets/images/user4.jpg"
+      "nombre": "Adrián",
+      "msg": "Hay un problema con la impresora.",
+      "hora": "hace 2d",
+      "img": "assets/img/adrian.png",
     },
     {
-      "name": "Adrián",
-      "message": "Hay un problema con la impresora.",
-      "time": "hace 2d",
-      "image": "assets/images/user4.jpg"
+      "nombre": "Cristina",
+      "msg": "Estoy haciendo cafe <3",
+      "hora": "hace 2d",
+      "img": "assets/img/cris.png",
     },
   ];
 
@@ -94,22 +95,22 @@ class ChatScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: CircleAvatar(
-                      backgroundImage: AssetImage(message["image"]!),
+                      backgroundImage: AssetImage(message["img"]!),
                     ),
                   ),
                   title: Text(
-                    message["name"]!,
+                    message["nombre"]!,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colores.textoOscuro,
                     ),
                   ),
-                  subtitle: Text(message["message"]!),
+                  subtitle: Text(message["msg"]!),
                   trailing: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        message["time"]!,
+                        message["hora"]!,
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(height: 4),

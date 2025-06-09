@@ -6,6 +6,8 @@ import 'odoo_session.dart';
 class OdooRemoteDataSource {
   final session = OdooSession();
 
+  // para autentiicación usuarios JSON-RPC.
+
   Future<int?> authenticate(String db, String username, String password) async {
     final url = Uri.parse('${session.baseUrl}/jsonrpc');
     final payload = {
@@ -29,7 +31,7 @@ class OdooRemoteDataSource {
       final jsonResponse = json.decode(response.body);
       return jsonResponse['result'];
     } else {
-      throw Exception("Error autenticando en Odoo: ${response.body}");
+      throw Exception("Error al intentar autentificarse en Odoo: ${response.body}");
     }
   }
 }

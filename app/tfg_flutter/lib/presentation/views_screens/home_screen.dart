@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               if (isAdmin) ...[
                 _buildBoton("Tareas", '/crear-tarea'),
-                _buildBoton("Pedidos", null),
+                _buildBoton("Pedidos", null), //no estan disponibles
                 _buildBoton("Reuniones", null),
               ],
 
@@ -83,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 
+//calendario español, desparecido el marcado
   Widget _buildCalendario() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 35),

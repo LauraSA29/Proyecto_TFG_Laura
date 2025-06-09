@@ -3,6 +3,7 @@ import '../../domain/entities/tarea.dart';
 import '../../data/repositories/tarea_repository.dart';
 import '../datasources/tarea_remote_datasource.dart';
 
+//implementación de tareas
 class TareaRepositoryImpl implements TareaRepository {
   final TareaRemoteDataSource remoteDataSource;
 

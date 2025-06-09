@@ -21,12 +21,12 @@ class Tarea {
   });
 
 //comentar despues
-  Tarea copyWith({
+  Tarea copyWith({ //esto era para actualizar creando una copia
     String? id,
     String? titulo,
     String? descripcion,
     String? estado,
-    DateTime? fecha,
+    DateTime? fecha, 
     String? asignado,
     int? proyectoId,
     List<int>? userIds,

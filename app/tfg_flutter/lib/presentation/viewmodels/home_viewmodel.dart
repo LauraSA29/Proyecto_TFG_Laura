@@ -4,10 +4,11 @@ import '/data/datasources/home_remote_datasource.dart';
 
 
 class HomeViewModel with ChangeNotifier {
+
   bool _isLoading = false;
   int _totalTareas = 0;
   int _totalReuniones = 0;
-  int _totalPedidos = 0;
+  int _totalPedidos = 0; //solo tarea usada
 
   bool get isLoading => _isLoading;
   int get totalTareas => _totalTareas;
@@ -23,11 +24,15 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
 
     try {
+
       _totalTareas = await remote.obtenerTotalTareas();
       _totalReuniones = await remote.obtenerTotalReuniones();
       _totalPedidos = await remote.obtenerTotalPedidos();
+
     } catch (e) {
-      print("Error al cargar resumen: $e");
+
+      print("error al cargar: $e"); //prueba por si no cargan
+      
     }
 
     _isLoading = false;

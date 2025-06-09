@@ -39,6 +39,7 @@ class UsuarioViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+//revisar
   Future<void> cargarSesionGuardada() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('usuario_id')) {

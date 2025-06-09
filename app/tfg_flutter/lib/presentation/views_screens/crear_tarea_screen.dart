@@ -51,6 +51,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     }
   }
 
+//hayq ue volver a ponerla en español
   void _seleccionarFecha() async {
     final picked = await showDatePicker(
       context: context,
@@ -80,15 +81,15 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     bool hayErrores = false;
 
     if (titulo.isEmpty) {
-      setState(() => errorTitulo = 'El título es obligatorio');
+      setState(() => errorTitulo = 'El título es necesario');
       hayErrores = true;
     } else if (titulo.length < 3) {
-      setState(() => errorTitulo = 'Mínimo 3 caracteres');
+      setState(() => errorTitulo = 'Mínimo 3 caracteres para el título');
       hayErrores = true;
     }
 
     if (descripcion.isEmpty) {
-      setState(() => errorDescripcion = 'La descripción es obligatoria');
+      setState(() => errorDescripcion = 'La descripción es necesaria');
       hayErrores = true;
     }
 
@@ -107,7 +108,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
 
     if (existeDuplicada) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ya existe una tarea con ese título y fecha')),
+        const SnackBar(content: Text('Ya existe una tarea con ese título y fecha lo siento')),
       );
       hayErrores = true;
     }
@@ -170,7 +171,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                                 child: Text(usuario),
                               );
                             }).toList(),
-                            decoration: _inputDecoration("Asignar a"),
+                            decoration: _inputDecoration("Asignar a"), //salen los usuarios
                             onChanged: (valor) {
                               setState(() => _usuarioSeleccionado = valor);
                             },
@@ -236,7 +237,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
           child: Text(
             _fechaSeleccionada != null
                 ? "Fecha: ${_fechaSeleccionada!.day}/${_fechaSeleccionada!.month}/${_fechaSeleccionada!.year}"
-                : "Sin fecha seleccionada",
+                : "Sin fecha",
             style: const TextStyle(fontSize: 16),
           ),
         ),

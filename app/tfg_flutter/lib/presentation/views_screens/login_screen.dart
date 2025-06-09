@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, '/recuperar');
+                      Navigator.pushNamed(context, '/recuperar'); //desaparecida
                     },
                     child: const Center(
                       child: Text(
@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             if (correo.isEmpty || password.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Completa todos los campos")),
+                                const SnackBar(content: Text("Completa todos los campos por favor")),
                               );
                               return;
                             }
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.pushReplacementNamed(context, '/home');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Credenciales inválidas")),
+                                const SnackBar(content: Text("Datos incorrectos")),
                               );
                             }
                           },
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, '/registro');
+                      Navigator.pushNamed(context, '/registro'); //desaparecida
                     },
                     child: const Center(
                       child: Text(
@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: const CircleAvatar(
               radius: 56,
-              backgroundImage: AssetImage('assets/images/profile.jpg'),
+              backgroundImage: AssetImage('assets/images/profile.jpg'), //futuro hacer que salga
             ),
           ),
         ),

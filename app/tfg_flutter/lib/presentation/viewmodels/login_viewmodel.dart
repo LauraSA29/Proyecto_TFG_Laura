@@ -10,6 +10,7 @@ class LoginViewModel extends ChangeNotifier {
   int? userId;
 
   Future<int?> login(String db, String username, String password) async {
+    
     isLoading = true;
     error = null;
     notifyListeners();
@@ -17,14 +18,20 @@ class LoginViewModel extends ChangeNotifier {
     int? userId;
 
     try {
+
       final result = await session.login(db, username, password);
       userId = result;
+
       if (userId == null) {
-        error = "Credenciales inválidas";
+        error = "Datos incorrectos";
       }
+
     } catch (e) {
+
       error = e.toString();
+
     } finally {
+
       isLoading = false;
       notifyListeners();
     }
