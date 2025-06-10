@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'data/datasources/tarea_remote_datasource.dart';
 import 'data/datasources/usuario_remote_datasource.dart';
@@ -68,6 +69,15 @@ class MyApp extends StatelessWidget {
         title: 'Tasknelia', //nombre app
         initialRoute: Rutas.login,
         routes: Rutas.getRoutes(),
+        locale: const Locale('es', 'ES'),
+        supportedLocales: const [
+          Locale('es', 'ES'),
+        ],
+        localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       ),
     );
   }

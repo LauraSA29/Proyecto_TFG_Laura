@@ -73,53 +73,64 @@ class ChatScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
+      body: Stack(
         children: [
-
-          HeaderWidget(
-            nombre: usuario?.nombre ?? "Usuario",
-            fotoUrl: usuario?.fotoUrl,
-            usuarioVM: usuarioVM,
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: ListView.separated(
-              itemCount: messages.length,
-              separatorBuilder: (context, index) => const Divider(height: 0),
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ListTile(
-                  leading: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage(message["img"]!),
-                    ),
-                  ),
-                  title: Text(
-                    message["nombre"]!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colores.textoOscuro,
-                    ),
-                  ),
-                  subtitle: Text(message["msg"]!),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        message["hora"]!,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                      const SizedBox(height: 4),
-                      const Icon(Icons.more_horiz, size: 20),
-                    ],
-                  ),
-                );
-              },
+          // Imagen de fondo
+          Positioned.fill(
+            child: Image.asset(
+              'assets/img/Fondo.png',
+              fit: BoxFit.cover,
             ),
+          ),
+
+          Column(
+            children: [
+              HeaderWidget(
+                nombre: usuario?.nombre ?? "Usuario",
+                fotoUrl: usuario?.fotoUrl,
+                usuarioVM: usuarioVM,
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: messages.length,
+                  separatorBuilder: (context, index) => const Divider(height: 0),
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return ListTile(
+                      leading: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(message["img"]!),
+                        ),
+                      ),
+                      title: Text(
+                        message["nombre"]!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colores.textoOscuro,
+                        ),
+                      ),
+                      subtitle: Text(message["msg"]!),
+                      trailing: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            message["hora"]!,
+                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 4),
+                          const Icon(Icons.more_horiz, size: 20),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

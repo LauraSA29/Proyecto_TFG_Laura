@@ -25,6 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Stack(
           children: [
+            //fondo
+            Positioned.fill(
+              child: Image.asset(
+                'assets/img/Fondo.png',
+                fit: BoxFit.cover,
+              ),
+            ),
             Positioned(top: 470, left: 20, child: _buildCircle(18, opacity: 0.2)),
             Positioned(top: 520, right: 25, child: _buildCircle(12, opacity: 0.2)),
             Positioned(bottom: 40, left: 30, child: _buildCircle(20, opacity: 0.1)),

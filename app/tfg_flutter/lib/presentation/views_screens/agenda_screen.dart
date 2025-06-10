@@ -30,79 +30,89 @@ class _AgendaScreenState extends State<AgendaScreen> {
     final usuario = usuarioVM.usuario;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            HeaderWidget(
-              nombre: usuario?.nombre ?? "Usuario",
-              fotoUrl: usuario?.fotoUrl,
-              usuarioVM: usuarioVM,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/img/Fondo.png',
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 12),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 38.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Esta es tú agenda",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colores.textoOscuro,
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                HeaderWidget(
+                  nombre: usuario?.nombre ?? "Usuario",
+                  fotoUrl: usuario?.fotoUrl,
+                  usuarioVM: usuarioVM,
+                ),
+                const SizedBox(height: 12),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 38.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Esta es tú agenda",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colores.textoOscuro,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Consumer<TareaViewModel>(
+                    builder: (context, tareaVM, _) {
+                      if (tareaVM.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final tareas = tareaVM.tareas;
+                      if (tareas.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            "No hay tareas.",
+                            style: TextStyle(color: Colores.textoOscuro),
+                          ),
+                        );
+                      }
+
+                      final hoy = DateTime.now();
+                      final tareasHoy = tareas.where((t) =>
+                          t.fecha.year == hoy.year &&
+                          t.fecha.month == hoy.month &&
+                          t.fecha.day == hoy.day).toList();
+
+                      final futuras = tareas.where((t) =>
+                          t.fecha.isAfter(DateTime(hoy.year, hoy.month, hoy.day))).toList();
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 38.0),
+                        child: ListView(
+                          children: [
+                            if (tareasHoy.isNotEmpty) ...[
+                              const Text("Hoy", style: _seccionStyle),
+                              const SizedBox(height: 8),
+                              ...tareasHoy.map((t) => _buildTarea(t)),
+                              const SizedBox(height: 20),
+                            ],
+                            if (futuras.isNotEmpty) ...[
+                              const Text("Más adelante", style: _seccionStyle),
+                              const SizedBox(height: 8),
+                              ...futuras.map((t) => _buildTarea(t)),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: Consumer<TareaViewModel>(
-                builder: (context, tareaVM, _) {
-                  if (tareaVM.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final tareas = tareaVM.tareas;
-                  if (tareas.isEmpty) {
-                    return const Center(child: Text("No hay tareas.",
-                      style: TextStyle(color: Colores.textoOscuro
-                      )
-                    ));
-                  }
-
-                  final hoy = DateTime.now();
-                  final tareasHoy = tareas.where((t) =>
-                      t.fecha.year == hoy.year &&
-                      t.fecha.month == hoy.month &&
-                      t.fecha.day == hoy.day).toList();
-
-                  final futuras = tareas.where((t) =>
-                      t.fecha.isAfter(DateTime(
-                          hoy.year, hoy.month, hoy.day))).toList();
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 38.0),
-                    child: ListView(
-                      children: [
-                        if (tareasHoy.isNotEmpty) ...[
-                          const Text("Hoy", style: _seccionStyle),
-                          const SizedBox(height: 8),
-                          ...tareasHoy.map((t) => _buildTareaCard(t)),
-                          const SizedBox(height: 20),
-                        ],
-                        if (futuras.isNotEmpty) ...[
-                          const Text("Más adelante", style: _seccionStyle),
-                          const SizedBox(height: 8),
-                          ...futuras.map((t) => _buildTareaCard(t)),
-                        ],
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -113,17 +123,33 @@ class _AgendaScreenState extends State<AgendaScreen> {
     color: Colores.textoOscuro,
   );
 
-  Widget _buildTareaCard(Tarea tarea) {
+//le faltaban cosas, arreglado de manera rápida
+  Widget _buildTarea(Tarea tarea) {
     final tareaVM = Provider.of<TareaViewModel>(context, listen: false);
-    final esCompletada = tarea.estado.toLowerCase() == "completada";
+    final esCompletada = tarea.estado.toLowerCase() == "completada" || tarea.estado.toLowerCase() == "done";
+
+    // estado a español
+    String estadoTraducido = tarea.estado.toLowerCase() == "done"
+        ? "Completada"
+        : tarea.estado.toLowerCase() == "new"
+            ? "Pendiente"
+            : tarea.estado.toLowerCase() == "in progress"
+              ? "En progreso"
+              : tarea.estado;
+
+    // para quitar las etiquetas <p> que salian al leer la descripción
+    final RegExp htmlTag = RegExp(r"<[^>]*>");
+    final descripcion = tarea.descripcion.replaceAll(htmlTag, "").trim();
 
     return Card(
       elevation: 1,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colores.fondoCampos,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //estado
             Container(
@@ -141,6 +167,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // título
                   Text(
                     tarea.titulo,
                     style: const TextStyle(
@@ -149,47 +176,76 @@ class _AgendaScreenState extends State<AgendaScreen> {
                       color: Colores.textoOscuro,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
+
+                  // estado
                   Text(
-                    tarea.estado,
+                    estadoTraducido,
                     style: TextStyle(
                       color: esCompletada ? Colors.green : Colors.red,
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // persona asignada
+                  Text(
+                    "Asignado a: ${tarea.asignado?.isNotEmpty == true ? tarea.asignado : 'Sin asignar'}",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // descripción
+                  Text(
+                    descripcion,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colores.textoOscuro,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
 
-            // fecha
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Text(
-                DateFormat("d MMM", 'es_ES').format(tarea.fecha),
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
-
-            // botones
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                // fecha
+                Text(
+                  DateFormat("d MMM", 'es_ES').format(tarea.fecha),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 4),
+
                 IconButton(
                   icon: const Icon(Icons.edit, size: 20, color: Colores.azulPrincipal),
                   onPressed: () {
                     Navigator.pushNamed(context, '/editar', arguments: tarea);
                   },
                 ),
+
                 IconButton(
-                  icon: const Icon(Icons.check, size: 20, color: Colores.azulPrincipal), //volver a poner la cajita
+                  icon: Icon(
+                    esCompletada ? Icons.check_box : Icons.check_box_outline_blank,
+                    size: 20,
+                    color: Colores.azulPrincipal,
+                  ),
                   onPressed: () {
-                    final nueva = tarea.copyWith(estado: 'Completada');
+                    final nuevoEstado = esCompletada ? 'New' : 'Completada';
+                    final nueva = tarea.copyWith(estado: nuevoEstado);
                     tareaVM.actualizarTarea(nueva);
                   },
                 ),
+
                 IconButton(
-                  icon: const Icon(Icons.delete,
-                      size: 20, color: Colores.textoOscuro),
+                  icon: const Icon(Icons.delete, size: 20, color: Colores.textoOscuro),
                   onPressed: () {
                     tareaVM.eliminarTarea(tarea.id);
                   },

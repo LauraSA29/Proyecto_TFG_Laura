@@ -27,31 +27,45 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              HeaderWidget(
-                nombre: usuario?.nombre ?? "Usuario",
-                fotoUrl: fotoUrl,
-                usuarioVM: usuarioVM,
+        child: Stack(
+          children: [
+            // Imagen de fondo
+            Positioned.fill(
+              child: Image.asset(
+                'assets/img/Fondo.png',
+                fit: BoxFit.cover,
               ),
-              const SizedBox(height: 10),
+            ),
 
-              if (isAdmin) ...[
-                _buildBoton("Tareas", '/crear-tarea'),
-                _buildBoton("Pedidos", null), //no estan disponibles
-                _buildBoton("Reuniones", null),
-              ],
+            // Contenido principal
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  HeaderWidget(
+                    nombre: usuario?.nombre ?? "Usuario",
+                    fotoUrl: fotoUrl,
+                    usuarioVM: usuarioVM,
+                  ),
+                  const SizedBox(height: 10),
 
-              _buildBoton("Agenda", '/agenda'),
-              const SizedBox(height: 20),
-              _buildCalendario(),
-            ],
-          ),
+                  if (isAdmin) ...[
+                    _buildBoton("Tareas", '/crear-tarea'),
+                    _buildBoton("Pedidos", null),
+                    _buildBoton("Reuniones", null),
+                  ],
+
+                  _buildBoton("Agenda", '/agenda'),
+                  const SizedBox(height: 20),
+                  _buildCalendario(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
 
   Widget _buildBoton(String texto, String? ruta) {
   return Padding(
