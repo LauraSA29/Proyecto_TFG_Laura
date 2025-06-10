@@ -40,8 +40,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
               usuarioVM: usuarioVM,
             ),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 38.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 38.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -64,7 +64,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
                   final tareas = tareaVM.tareas;
                   if (tareas.isEmpty) {
-                    return const Center(child: Text("No hay tareas."));
+                    return const Center(child: Text("No hay tareas.",
+                      style: TextStyle(color: Colores.textoOscuro
+                      )
+                    ));
                   }
 
                   final hoy = DateTime.now();
@@ -172,21 +175,21 @@ class _AgendaScreenState extends State<AgendaScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
+                  icon: const Icon(Icons.edit, size: 20, color: Colores.azulPrincipal),
                   onPressed: () {
                     Navigator.pushNamed(context, '/editar', arguments: tarea);
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.check, size: 20, color: Colors.green),
+                  icon: const Icon(Icons.check, size: 20, color: Colores.azulPrincipal), //volver a poner la cajita
                   onPressed: () {
                     final nueva = tarea.copyWith(estado: 'Completada');
                     tareaVM.actualizarTarea(nueva);
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline,
-                      size: 20, color: Colors.red),
+                  icon: const Icon(Icons.delete,
+                      size: 20, color: Colores.textoOscuro),
                   onPressed: () {
                     tareaVM.eliminarTarea(tarea.id);
                   },

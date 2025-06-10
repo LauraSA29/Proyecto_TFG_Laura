@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 
 // mantener el estado de la sesión con Odoo
 class OdooSession {
-  static final OdooSession _instance = OdooSession._internal();
+  static final OdooSession _instance = OdooSession._interna();
   factory OdooSession() => _instance;
-  OdooSession._internal();
+  OdooSession._interna();
 
-  final String baseUrl = 'http://localhost:8080'; // Ahora pasa por NGINX con CORS POR FIN //'http://localhost:8069' esto estaba antes
+  final String baseUrl = 'http://localhost:8080'; // Ahora pasa por NGINX con CORS POR FIN    'http://localhost:8069' esto estaba antes
   final String db = 'odoo';
   final String username = 'admin';
   final String password = 'admin';

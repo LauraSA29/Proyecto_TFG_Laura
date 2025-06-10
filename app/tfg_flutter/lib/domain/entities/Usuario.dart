@@ -1,4 +1,4 @@
-// lib/domain/entities/Usuario.dart
+// lib/domain/entities/usuario.dart
 class Usuario {
   final String id;
   final String nombre;

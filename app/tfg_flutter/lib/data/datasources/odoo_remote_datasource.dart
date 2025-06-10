@@ -8,7 +8,7 @@ class OdooRemoteDataSource {
 
   // para autentiicación usuarios JSON-RPC.
 
-  Future<int?> authenticate(String db, String username, String password) async {
+  Future<int?> autentificar(String db, String username, String password) async {
     final url = Uri.parse('${session.baseUrl}/jsonrpc');
     final payload = {
       "jsonrpc": "2.0",
@@ -27,7 +27,7 @@ class OdooRemoteDataSource {
       body: json.encode(payload),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200) { //200 es OK
       final jsonResponse = json.decode(response.body);
       return jsonResponse['result'];
     } else {

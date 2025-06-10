@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: const CircleAvatar(
               radius: 56,
-              backgroundImage: AssetImage('assets/images/profile.jpg'), //futuro hacer que salga
+              backgroundImage: AssetImage('assets/icon/logo.png'), //futuro hacer que salga foto usuario, voy a poner el logo para que no se quede en blanco
             ),
           ),
         ),

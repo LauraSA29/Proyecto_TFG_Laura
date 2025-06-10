@@ -1,6 +1,6 @@
 import '/domain/entities/tarea.dart';
 
-/// datos tarea para la conversión entre JSON y dominio
+// datos tarea para la conversión entre JSON y dominio
 class TareaModel {
   final String id;
   final String titulo;
@@ -8,7 +8,7 @@ class TareaModel {
   final String estado;
   final String fecha;
   final int proyectoId;
-  final List<int> userIds; //
+  final List<int> userIds;
   final String? asignado;
 
   TareaModel({

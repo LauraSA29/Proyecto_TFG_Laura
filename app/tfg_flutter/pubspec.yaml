@@ -21,6 +21,7 @@ dependencies:
   http: ^1.4.0
   intl: 0.19.0
   open_file: ^3.3.2  # Para el manual usuario pero al final nada
+  syncfusion_flutter_pdfviewer: ^24.1.41 # apuntar biblio igualmente
   path_provider: ^2.1.2
 
 dev_dependencies:
@@ -28,11 +29,20 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  windows: true
+  image_path: "assets/icon/logo.png" # se ha añdido logo
 
 flutter:
 
   uses-material-design: true
   assets:
     - assets/img/
-    - assets/docs/Manual usuario Tasknelia.pdf
+    - assets/docs/Manual_usuario_Tasknelia.pdf
+    - assets/icon/
+
 

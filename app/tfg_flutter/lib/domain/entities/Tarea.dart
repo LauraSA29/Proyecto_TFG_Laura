@@ -1,4 +1,4 @@
-// lib/domain/entities/Tarea.dart
+// lib/domain/entities/tarea.dart
 class Tarea {
   final String id;
   final String titulo;

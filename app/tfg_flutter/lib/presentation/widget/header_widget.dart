@@ -74,6 +74,13 @@ class HeaderWidget extends StatelessWidget {
                           color: Colores.textoOscuro,
                         ),
                       ),
+                      const SizedBox(width: 1),
+                      IconButton(
+                        icon: const Icon(Icons.help_outline),
+                        color: Colores.textoOscuro,
+                        tooltip: 'Ver manual de usuario', //nuevo para el manual pero no va bien, pero se entiende que la idea era apra eso
+                        onPressed: () {},
+                      ),
                     ],
                   ),
                   Row(
@@ -81,6 +88,7 @@ class HeaderWidget extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.chat_rounded),
                         color: Colores.textoOscuro,
+                        tooltip: 'Tus chats',
                         onPressed: () {
                           Navigator.pushNamed(context, '/chat');
                         },
@@ -89,9 +97,8 @@ class HeaderWidget extends StatelessWidget {
                         icon: const Icon(Icons.logout),
                         color: Colores.textoOscuro,
                         onPressed: () async {
-                          await usuarioVM.cerrarSesion();
                           if (context.mounted) {
-                            Navigator.pushReplacementNamed(context, '/login');
+                            Navigator.pushReplacementNamed(context, '/home'); //para ir a pantalla de inicio, debe arreglarse para que en home salga a login y en home se quite el usuario con usuarioVM.cerrarSesion()
                           }
                         },
                       ),

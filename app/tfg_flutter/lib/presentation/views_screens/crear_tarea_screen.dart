@@ -100,6 +100,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
       hayErrores = true;
     }
 
+//no se pueden duplicadas
     final existeDuplicada = tareaVM.tareas.any((t) =>
         t.titulo.toLowerCase() == titulo.toLowerCase() &&
         t.fecha.year == fecha?.year &&
@@ -150,12 +151,27 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                 usuarioVM: usuarioVM,
               ),
               const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 38.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Vas a crear una tarea:",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colores.textoOscuro,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 38),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildTextField(
+                    _texto(
                       controller: _tituloController,
                       label: "Título",
                       errorText: errorTitulo,
@@ -171,17 +187,17 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
                                 child: Text(usuario),
                               );
                             }).toList(),
-                            decoration: _inputDecoration("Asignar a"), //salen los usuarios
+                            decoration: _deco("Asignar tarea a"), //salen los usuarios
                             onChanged: (valor) {
                               setState(() => _usuarioSeleccionado = valor);
                             },
                           ),
                     const SizedBox(height: 30),
-                    _buildFechaPicker(),
+                    _fecha(),
                     const SizedBox(height: 20),
-                    _buildTextField(
+                    _texto(
                       controller: _descripcionController,
-                      label: "Descripción",
+                      label: "Descripción de la tarea",
                       errorText: errorDescripcion,
                       maxLines: 3,
                     ),
@@ -217,7 +233,7 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     );
   }
 
-  Widget _buildTextField({
+  Widget _texto({
     required TextEditingController controller,
     required String label,
     String? errorText,
@@ -226,11 +242,11 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      decoration: _inputDecoration(label).copyWith(errorText: errorText),
+      decoration: _deco(label).copyWith(errorText: errorText),
     );
   }
 
-  Widget _buildFechaPicker() {
+  Widget _fecha() {
     return Row(
       children: [
         Expanded(
@@ -245,12 +261,13 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
           onPressed: _seleccionarFecha,
           icon: const Icon(Icons.calendar_today),
           color: Colores.azulPrincipal,
+          tooltip: 'Haz clic para añadir una fecha',
         ),
       ],
     );
   }
 
-  InputDecoration _inputDecoration(String label) {
+  InputDecoration _deco(String label) {
     return InputDecoration(
       labelText: label,
       filled: true,

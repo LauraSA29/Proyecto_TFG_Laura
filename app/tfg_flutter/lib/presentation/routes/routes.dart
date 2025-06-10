@@ -7,12 +7,13 @@ import '../views_screens/chat_screen.dart';
 import '../views_screens/crear_tarea_screen.dart';
 
 //rutas para no tener que estar repitiendolas
-class AppRoutes {
+class Rutas {
   static const String login = '/login';
   static const String home = '/home';
   static const String chat = '/chat';
   static const String agenda = '/agenda';
   static const String crearTarea = '/crear-tarea';
+  //vovlver a añadir editar
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {

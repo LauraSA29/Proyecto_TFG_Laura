@@ -81,7 +81,7 @@ class TareaRemoteDataSource {
       }
     } catch (e) {
       print('Error en fecha: $e');
-      fecha = DateTime.now();
+      fecha = DateTime.now(); //pruebas 
     }
 
     int proyectoId = 0;
@@ -159,7 +159,7 @@ class TareaRemoteDataSource {
       if (userResult != null && userResult.isNotEmpty) {
         userId = userResult[0]['id'];
       } else {
-        print("usuario no encontrado: ${tarea.asignado}");
+        print("usuario no encontrado: ${tarea.asignado}"); //pruebas 
       }
     }
 

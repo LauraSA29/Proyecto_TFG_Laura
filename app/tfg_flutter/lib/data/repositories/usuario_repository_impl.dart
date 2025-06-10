@@ -1,7 +1,7 @@
 // lib/data/repositories/usuario_repository_impl.dart
-import '../../domain/entities/usuario.dart';
-import '../../data/repositories/usuario_repository.dart';
-import '../datasources/usuario_remote_datasource.dart';
+import '/domain/entities/usuario.dart';
+import '/data/repositories/usuario_repository.dart';
+import '/data/datasources/usuario_remote_datasource.dart';
 
 // implementación usuario
 class UsuarioRepositoryImpl implements UsuarioRepository {

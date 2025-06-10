@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'presentation/routes/routes.dart';
-
 import 'data/datasources/tarea_remote_datasource.dart';
 import 'data/datasources/usuario_remote_datasource.dart';
 import 'data/datasources/home_remote_datasource.dart';
-
 import 'data/repositories/tarea_repository_impl.dart';
 import 'data/repositories/usuario_repository_impl.dart';
 
@@ -22,6 +19,7 @@ import 'presentation/viewmodels/usuario_viewmodel.dart';
 import 'presentation/viewmodels/login_viewmodel.dart';
 import 'presentation/viewmodels/home_viewmodel.dart';
 import 'presentation/viewmodels/chat_viewmodel.dart';
+import 'presentation/routes/routes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -67,9 +65,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Tasknelia', //nombre app, haacer logo?
-        initialRoute: AppRoutes.login,
-        routes: AppRoutes.getRoutes(),
+        title: 'Tasknelia', //nombre app
+        initialRoute: Rutas.login,
+        routes: Rutas.getRoutes(),
       ),
     );
   }
