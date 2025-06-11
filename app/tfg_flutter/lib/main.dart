@@ -53,7 +53,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
-        ChangeNotifierProvider(create: (_) => UsuarioViewModel(obtenerUsuarioUC)),
+        ChangeNotifierProvider(
+          create: (_) {
+            final vm = UsuarioViewModel(obtenerUsuarioUC);
+            vm.cargarSesion(); // carga usuario o al refrescar se va
+            return vm;
+          }
+        ),
         ChangeNotifierProvider(create: (_) => TareaViewModel(
           obtenerTareasUseCase: obtenerTareasUC,
           crearTareaUseCase: crearTareaUC,

@@ -69,9 +69,9 @@ class TareaViewModel with ChangeNotifier {
     await cargarTareas();
   }
 
-  Future<void> actualizarTarea(Tarea tarea) async {
-  await eliminarTarea(tarea.id);
-  await crearTarea(tarea);
+  Future<void> actualizarTarea(Tarea tarea) async { //arreglado
+    await eliminarTarea(tarea.id);
+    await crearTarea(tarea);
   }
 
   Future<List<String>> obtenerUsuarios() async {

@@ -157,7 +157,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
               height: 10,
               margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                color: esCompletada ? Colors.green : Colors.red,
+                color: esCompletada ? const Color.fromARGB(255, 70, 170, 73) : const Color.fromARGB(255, 197, 51, 41),
                 shape: BoxShape.circle,
               ),
             ),
@@ -182,7 +182,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   Text(
                     estadoTraducido,
                     style: TextStyle(
-                      color: esCompletada ? Colors.green : Colors.red,
+                      color: esCompletada ? const Color.fromARGB(255, 70, 170, 73) : const Color.fromARGB(255, 197, 51, 41),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -222,36 +222,39 @@ class _AgendaScreenState extends State<AgendaScreen> {
                   DateFormat("d MMM", 'es_ES').format(tarea.fecha),
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 48),
 
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 20, color: Colores.azulPrincipal),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/editar', arguments: tarea);
-                  },
-                ),
 
-                IconButton(
-                  icon: Icon(
-                    esCompletada ? Icons.check_box : Icons.check_box_outline_blank,
-                    size: 20,
-                    color: Colores.azulPrincipal,
-                  ),
-                  onPressed: () {
-                    final nuevoEstado = esCompletada ? 'New' : 'Completada';
-                    final nueva = tarea.copyWith(estado: nuevoEstado);
-                    tareaVM.actualizarTarea(nueva);
-                  },
-                ),
-
-                IconButton(
-                  icon: const Icon(Icons.delete, size: 20, color: Colores.textoOscuro),
-                  onPressed: () {
-                    tareaVM.eliminarTarea(tarea.id);
-                  },
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, size: 20, color: Colores.azulPrincipal),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/editar', arguments: tarea);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        esCompletada ? Icons.check_box : Icons.check_box_outline_blank,
+                        size: 20,
+                        color: Colores.azulPrincipal,
+                      ),
+                      onPressed: () {
+                        final nuevoEstado = esCompletada ? 'New' : 'Done';
+                        tareaVM.actualizarEstado(tarea.id, nuevoEstado);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, size: 20, color: Colores.textoOscuro),
+                      onPressed: () {
+                        tareaVM.eliminarTarea(tarea.id);
+                      },
+                    ),
+                  ],
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),

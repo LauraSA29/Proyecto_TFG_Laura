@@ -90,6 +90,9 @@ class TareaRemoteDataSource {
     }
 
     List<int> userIds = [];
+    if (json['user_ids'] is List && json['user_ids'].isNotEmpty) {
+    userIds = List<int>.from(json['user_ids']);
+  }
     String? asignado;
 
     if (json['user_ids'] is List) {

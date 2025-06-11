@@ -140,89 +140,103 @@ class _CrearTareaScreenState extends State<CrearTareaScreen> {
     final usuario = usuarioVM.usuario;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
+          child: Stack(
             children: [
-              HeaderWidget(
-                nombre: usuario?.nombre ?? "Usuario",
-                fotoUrl: usuario?.fotoUrl,
-                usuarioVM: usuarioVM,
-              ),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 38.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Vas a crear una tarea:",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colores.textoOscuro,
-                    ),
-                  ),
+              // fondo
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/img/Fondo.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 38),
+
+              SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _texto(
-                      controller: _tituloController,
-                      label: "Título",
-                      errorText: errorTitulo,
+                    HeaderWidget(
+                      nombre: usuario?.nombre ?? "Usuario",
+                      fotoUrl: usuario?.fotoUrl,
+                      usuarioVM: usuarioVM,
+                    ),
+                    const SizedBox(height: 5),
+                    const SizedBox(height: 20),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 38.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Vas a crear una tarea:",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colores.textoOscuro,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    _cargandoUsuarios
-                        ? const Center(child: CircularProgressIndicator())
-                        : DropdownButtonFormField<String>(
-                            value: _usuarioSeleccionado,
-                            items: _usuarios.map((usuario) {
-                              return DropdownMenuItem(
-                                value: usuario,
-                                child: Text(usuario),
-                              );
-                            }).toList(),
-                            decoration: _deco("Asignar tarea a"), //salen los usuarios
-                            onChanged: (valor) {
-                              setState(() => _usuarioSeleccionado = valor);
-                            },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 38),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _texto(
+                            controller: _tituloController,
+                            label: "Título",
+                            errorText: errorTitulo,
                           ),
-                    const SizedBox(height: 30),
-                    _fecha(),
-                    const SizedBox(height: 20),
-                    _texto(
-                      controller: _descripcionController,
-                      label: "Descripción de la tarea",
-                      errorText: errorDescripcion,
-                      maxLines: 3,
+                          const SizedBox(height: 20),
+                          _cargandoUsuarios
+                              ? const Center(child: CircularProgressIndicator())
+                              : DropdownButtonFormField<String>(
+                                  value: _usuarioSeleccionado,
+                                  items: _usuarios.map((usuario) {
+                                    return DropdownMenuItem(
+                                      value: usuario,
+                                      child: Text(usuario),
+                                    );
+                                  }).toList(),
+                                  decoration: _deco("Asignar tarea a"), //salen los usuarios
+                                  onChanged: (valor) {
+                                    setState(() => _usuarioSeleccionado = valor);
+                                  },
+                                ),
+                          const SizedBox(height: 30),
+                          _fecha(),
+                          const SizedBox(height: 20),
+                          _texto(
+                            controller: _descripcionController,
+                            label: "Descripción de la tarea",
+                            errorText: errorDescripcion,
+                            maxLines: 3,
+                          ),
+                          const SizedBox(height: 40),
+                          _enviando
+                              ? const Center(child: CircularProgressIndicator())
+                              : ElevatedButton(
+                                  onPressed: _crearTarea,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colores.azulPrincipal,
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Crear Tarea",
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 32, 124, 230),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 40),
-                    _enviando
-                        ? const Center(child: CircularProgressIndicator())
-                        : ElevatedButton(
-                            onPressed: _crearTarea,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colores.azulPrincipal,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              "Crear Tarea",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 32, 124, 230),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                    const SizedBox(height: 24),
                   ],
                 ),
               ),

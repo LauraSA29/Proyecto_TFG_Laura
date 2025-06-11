@@ -28,23 +28,19 @@ class _LoginScreenState extends State<LoginScreen> {
             //fondo
             Positioned.fill(
               child: Image.asset(
-                'assets/img/Fondo.png',
+                'assets/img/Fondo.png', //deberia ser reutilizable si
                 fit: BoxFit.cover,
               ),
             ),
-            Positioned(top: 470, left: 20, child: _buildCircle(18, opacity: 0.2)),
-            Positioned(top: 520, right: 25, child: _buildCircle(12, opacity: 0.2)),
-            Positioned(bottom: 40, left: 30, child: _buildCircle(20, opacity: 0.1)),
-            Positioned(bottom: 10, right: 20, child: _buildCircle(24, opacity: 0.1)),
 
             SingleChildScrollView(
               child: Column(
                 children: [
                   _buildHeader(context),
                   const SizedBox(height: 5),
-                  _buildTextField('Correo', Icons.email, _correoController, false),
+                  _campos('Correo', Icons.email, _correoController, false),
                   const SizedBox(height: 25),
-                  _buildTextField('Contraseña', Icons.vpn_key, _passwordController, true),
+                  _campos('Contraseña', Icons.vpn_key, _passwordController, true),
                   const SizedBox(height: 35),
 
                   GestureDetector(
@@ -148,17 +144,17 @@ class _LoginScreenState extends State<LoginScreen> {
         Positioned(
           top: size.height * 0.10 - 20,
           left: size.width / 2 - 90,
-          child: _buildCircle(24),
+          child: _circulos(24),
         ),
         Positioned(
           top: size.height * 0.10 - 10,
           right: size.width / 2 - 70,
-          child: _buildCircle(16),
+          child: _circulos(16),
         ),
         Positioned(
           top: size.height * 0.10 + 80,
           right: size.width / 2 - 100,
-          child: _buildCircle(20),
+          child: _circulos(20),
         ),
         Positioned(
           top: size.height * 0.10,
@@ -194,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon, TextEditingController controller, bool obscure) {
+  Widget _campos(String hint, IconData icon, TextEditingController controller, bool obscure) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: TextField(
@@ -214,12 +210,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildCircle(double size, {double opacity = 1}) {
+  Widget _circulos(double size) {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(opacity),
+      decoration: const BoxDecoration(
+        color: Colors.white,
         shape: BoxShape.circle,
       ),
     );

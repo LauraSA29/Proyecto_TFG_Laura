@@ -28,7 +28,7 @@ class LoginViewModel extends ChangeNotifier {
 
     } catch (e) {
 
-      error = e.toString();
+      error = "No existe ese correo o contraseña";
 
     } finally {
 

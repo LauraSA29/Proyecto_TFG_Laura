@@ -4,6 +4,7 @@ import '/theme/colores.dart';
 import '/presentation/viewmodels/usuario_viewmodel.dart';
 
 //encabezado para poner en las screens, debido al error de git, esta la versión de salir hacia login
+//reutilizable
 class HeaderWidget extends StatelessWidget {
   final String nombre;
   final String? fotoUrl;
